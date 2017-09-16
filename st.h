@@ -85,6 +85,12 @@ enum window_state {
 	WIN_FOCUSED = 2
 };
 
+enum resource_type {
+	STRING = 0,
+	INTEGER = 1,
+	FLOAT = 2
+};
+
 typedef unsigned char uchar;
 typedef unsigned int uint;
 typedef unsigned long ulong;
@@ -181,6 +187,13 @@ typedef struct {
 	const Arg arg;
 } Shortcut;
 
+/* Xresources preferences */
+typedef struct {
+	char *name;
+	enum resource_type type;
+	void *dst;
+} ResourcePref;
+
 void die(const char *, ...);
 void redraw(void);
 
@@ -252,7 +265,7 @@ extern int bellvolume;
 extern unsigned int blinktimeout;
 extern char *termname;
 extern unsigned int tabspaces;
-extern const char *colorname[];
+extern char *colorname[];
 extern size_t colornamelen;
 extern unsigned int defaultfg;
 extern unsigned int defaultbg;
@@ -269,6 +282,8 @@ extern MouseShortcut mshortcuts[];
 extern size_t mshortcutslen;
 extern Shortcut shortcuts[];
 extern size_t shortcutslen;
+extern ResourcePref resources[];
+extern size_t resourceslen;
 extern uint forceselmod;
 extern uint selmasks[];
 extern size_t selmaskslen;

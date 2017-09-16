@@ -237,6 +237,7 @@ size_t colornamelen = LEN(colorname);
 size_t mshortcutslen = LEN(mshortcuts);
 size_t shortcutslen = LEN(shortcuts);
 size_t selmaskslen = LEN(selmasks);
+size_t resourceslen = LEN(resources);
 
 ssize_t
 xwrite(int fd, const char *s, size_t len)
