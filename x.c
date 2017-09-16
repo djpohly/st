@@ -1739,13 +1739,12 @@ config_init(void)
 
 	XrmInitialize();
 	resm = XResourceManagerString(xw.dpy);
+	if (!resm)
+		return;
 
-	if (resm != NULL) {
-		db = XrmGetStringDatabase(resm);
-
-		for (p = resources; p < resources + resourceslen; p++)
-			resource_load(db, p->name, p->type, p->dst);
-	}
+	db = XrmGetStringDatabase(resm);
+	for (p = resources; p < resources + resourceslen; p++)
+		resource_load(db, p->name, p->type, p->dst);
 }
 
 int
