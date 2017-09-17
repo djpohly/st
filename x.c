@@ -1730,9 +1730,6 @@ resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)
 void
 config_init(void)
 {
-	if(!(xw.dpy = XOpenDisplay(NULL)))
-		die("Can't open display\n");
-
 	char *resm;
 	XrmDatabase db;
 	ResourcePref *p;
@@ -1807,6 +1804,10 @@ run:
 	}
 	setlocale(LC_CTYPE, "");
 	XSetLocaleModifiers("");
+
+	if(!(xw.dpy = XOpenDisplay(NULL)))
+		die("Can't open display\n");
+
 	config_init();
 	tnew(MAX(cols, 1), MAX(rows, 1));
 	xinit();
