@@ -1714,15 +1714,15 @@ resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)
 		return 1;
 
 	switch (rtype) {
-		case STRING:
-			*sdst = ret.addr;
-			break;
-		case INTEGER:
-			*idst = strtoul(ret.addr, NULL, 10);
-			break;
-		case FLOAT:
-			*fdst = strtof(ret.addr, NULL);
-			break;
+	case STRING:
+		*sdst = ret.addr;
+		break;
+	case INTEGER:
+		*idst = strtoul(ret.addr, NULL, 10);
+		break;
+	case FLOAT:
+		*fdst = strtof(ret.addr, NULL);
+		break;
 	}
 	return 0;
 }
