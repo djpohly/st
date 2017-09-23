@@ -434,7 +434,7 @@ tlinelen(int y)
 	if (term.line[y][i - 1].mode & ATTR_WRAP)
 		return i;
 
-	while (i > 0 && term.line[y][i - 1].u == ' ')
+	while (i > 0 && term.line[y][i - 1].u)
 		--i;
 
 	return i;
@@ -631,7 +631,7 @@ getsel(void)
 			lastx = (sel.ne.y == y) ? sel.ne.x : term.col-1;
 		}
 		last = &term.line[y][MIN(lastx, linelen-1)];
-		while (last >= gp && last->u == ' ')
+		while (last >= gp && !last->u)
 			--last;
 
 		for ( ; gp <= last; ++gp) {
@@ -1251,7 +1251,7 @@ tclearregion(int x1, int y1, int x2, int y2)
 			gp->fg = term.c.attr.fg;
 			gp->bg = term.c.attr.bg;
 			gp->mode = 0;
-			gp->u = ' ';
+			gp->u = '\0';
 		}
 	}
 }
@@ -2032,7 +2032,7 @@ tdumpline(int n)
 
 	bp = &term.line[n][0];
 	end = &bp[MIN(tlinelen(n), term.col) - 1];
-	if (bp != end || bp->u != ' ') {
+	if (bp != end || bp->u) {
 		for ( ;bp <= end; ++bp)
 			tprinter(buf, utf8encode(bp->u, buf));
 	}
@@ -2424,6 +2424,24 @@ check_control_code:
 	if (sel.ob.x != -1 && BETWEEN(term.c.y, sel.ob.y, sel.oe.y))
 		selclear();
 
+	// DJP wide characters do not set ATTR_WRAP at all or in the expected
+	// (last) column.  This is used for selection snapping, copying, and
+	// potentially for line wrapping.  Possible alternatives:
+	//  * Set ATTR_WRAP on the last column, glyph is ' '
+	//  * Set ATTR_WRAP on the last column, glyph is '\0'
+	//  * Set ATTR_WRAP on the last character used (same for normal-width,
+	//        on the WDUMMY glyph for wide characters)
+	//    + Makes clear exactly where the wrap happened
+	//    + May be more natural for SNAP_WORD checks
+	//    - Have to check two columns to know whether line is wrapped
+	//    - Need to move if line is re-wrapped
+	//  * Set ATTR_WRAP on the first character of the original line
+	//    + Easy to determine if line wraps to next/prior
+	//    + Stays correct when scrolled off top of screen
+	//    + Next line will always exist
+	//  * Set ATTR_WRAP on the first character of the next line
+	//    + Easy to determine if line wraps to next/prior
+	//    - Need to check at top of screen for row==0
 	gp = &term.line[term.c.y][term.c.x];
 	if (IS_SET(MODE_WRAP) && (term.c.state & CURSOR_WRAPNEXT)) {
 		gp->mode |= ATTR_WRAP;
@@ -2431,9 +2449,11 @@ check_control_code:
 		gp = &term.line[term.c.y][term.c.x];
 	}
 
+	// DJP push later glyphs into wrapped line
 	if (IS_SET(MODE_INSERT) && term.c.x+width < term.col)
 		memmove(gp+width, gp, (term.col - term.c.x - width) * sizeof(Glyph));
 
+	// DJP set ATTR_WRAP?
 	if (term.c.x+width > term.col) {
 		tnewline(1);
 		gp = &term.line[term.c.y][term.c.x];
@@ -2444,7 +2464,8 @@ check_control_code:
 	if (width == 2) {
 		gp->mode |= ATTR_WIDE;
 		if (term.c.x+1 < term.col) {
-			gp[1].u = '\0';
+			/* Space rather than null for correct tlinelen */
+			gp[1].u = ' ';
 			gp[1].mode = ATTR_WDUMMY;
 		}
 	}

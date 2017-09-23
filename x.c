@@ -1132,7 +1132,7 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
 
 	for (i = 0, xp = winx, yp = winy + font->ascent; i < len; ++i) {
 		/* Fetch rune and mode for current glyph. */
-		rune = glyphs[i].u;
+		rune = glyphs[i].u ? glyphs[i].u : ' ';
 		mode = glyphs[i].mode;
 
 		/* Skip dummy wide-character spacing. */
