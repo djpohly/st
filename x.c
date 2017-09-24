@@ -192,14 +192,6 @@ static double defaultfontsize = 0;
 
 static int oldbutton = 3; /* button event on startup: 3 = release */
 
-/* config.h array lengths */
-size_t colornamelen = LEN(colorname);
-size_t mshortcutslen = LEN(mshortcuts);
-size_t shortcutslen = LEN(shortcuts);
-size_t mappedkeyslen = LEN(mappedkeys);
-size_t keylen = LEN(key);
-size_t selmaskslen = LEN(selmasks);
-
 int
 x2col(int x)
 {
@@ -248,7 +240,7 @@ getbuttoninfo(XEvent *e)
 	selnormalize();
 
 	sel.type = SEL_REGULAR;
-	for (type = 1; type < selmaskslen; ++type) {
+	for (type = 1; type < LEN(selmasks); ++type) {
 		if (match(selmasks[type], state)) {
 			sel.type = type;
 			break;
@@ -331,7 +323,7 @@ bpress(XEvent *e)
 		return;
 	}
 
-	for (ms = mshortcuts; ms < mshortcuts + mshortcutslen; ms++) {
+	for (ms = mshortcuts; ms < mshortcuts + LEN(mshortcuts); ms++) {
 		if (e->xbutton.button == ms->b
 				&& match(ms->mask, e->xbutton.state)) {
 			ttysend(ms->s, strlen(ms->s));
@@ -721,7 +713,7 @@ xloadcols(void)
 	static int loaded;
 	Color *cp;
 
-	dc.collen = MAX(colornamelen, 256);
+	dc.collen = MAX(LEN(colorname), 256);
 	dc.col = xmalloc(dc.collen * sizeof(Color));
 
 	if (loaded) {
@@ -1682,7 +1674,7 @@ kpress(XEvent *ev)
 
 	len = XmbLookupString(xw.xic, e, buf, sizeof buf, &ksym, &status);
 	/* 1. shortcuts */
-	for (bp = shortcuts; bp < shortcuts + shortcutslen; bp++) {
+	for (bp = shortcuts; bp < shortcuts + LEN(shortcuts); bp++) {
 		if (ksym == bp->keysym && match(bp->mod, e->state)) {
 			bp->func(&(bp->arg));
 			return;
@@ -1758,16 +1750,16 @@ kmap(KeySym k, uint state)
 	int i;
 
 	/* Check for mapped keys out of X11 function keys. */
-	for (i = 0; i < mappedkeyslen; i++) {
+	for (i = 0; i < LEN(mappedkeys); i++) {
 		if (mappedkeys[i] == k)
 			break;
 	}
-	if (i == mappedkeyslen) {
+	if (i == LEN(mappedkeys)) {
 		if ((k & 0xFFFF) < 0xFD00)
 			return NULL;
 	}
 
-	for (kp = key; kp < key + keylen; kp++) {
+	for (kp = key; kp < key + LEN(key); kp++) {
 		if (kp->k != k)
 			continue;
 
