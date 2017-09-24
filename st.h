@@ -124,21 +124,6 @@ typedef struct {
 	int *tabs;
 } Term;
 
-/* Purely graphic info */
-typedef struct {
-	int tw, th; /* tty width and height */
-	int w, h; /* window width and height */
-	int ch; /* char height */
-	int cw; /* char width  */
-	char state; /* focus, redraw, visible */
-} TermWindow;
-
-typedef struct {
-	uint b;
-	uint mask;
-	char *s;
-} MouseShortcut;
-
 typedef struct {
 	int mode;
 	int type;
@@ -168,23 +153,6 @@ typedef union {
 	float f;
 	const void *v;
 } Arg;
-
-typedef struct {
-	uint mod;
-	KeySym keysym;
-	void (*func)(const Arg *);
-	const Arg arg;
-} Shortcut;
-
-typedef struct {
-	KeySym k;
-	uint mask;
-	char *s;
-	/* three valued logic variables: 0 indifferent, 1 on, -1 off */
-	signed char appkey;    /* application keypad */
-	signed char appcursor; /* application cursor */
-	signed char crlf;      /* crlf mode          */
-} Key;
 
 void die(const char *, ...);
 void redraw(void);
@@ -267,10 +235,6 @@ extern unsigned int mouseshape;
 extern unsigned int mousefg;
 extern unsigned int mousebg;
 extern unsigned int defaultattr;
-extern MouseShortcut mshortcuts[];
-extern Shortcut shortcuts[];
-extern KeySym mappedkeys[];
-extern Key key[];
 extern size_t keylen;
 extern uint ignoremod;
 extern uint forceselmod;

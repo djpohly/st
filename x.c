@@ -21,12 +21,41 @@ static char *argv0;
 #include "st.h"
 #include "win.h"
 
+/* X modifiers */
+#define XK_ANY_MOD    UINT_MAX
+#define XK_NO_MOD     0
+#define XK_SWITCH_MOD (1<<13)
+
 /* XEMBED messages */
 #define XEMBED_FOCUS_IN  4
 #define XEMBED_FOCUS_OUT 5
 
 /* constants */
 #define ISO14755CMD		"dmenu -w %lu -p codepoint: </dev/null"
+
+/* types used in config.h */
+typedef struct {
+	uint mod;
+	KeySym keysym;
+	void (*func)(const Arg *);
+	const Arg arg;
+} Shortcut;
+
+typedef struct {
+	uint b;
+	uint mask;
+	char *s;
+} MouseShortcut;
+
+typedef struct {
+	KeySym k;
+	uint mask;
+	char *s;
+	/* three valued logic variables: 0 indifferent, 1 on, -1 off */
+	signed char appkey;    /* application keypad */
+	signed char appcursor; /* application cursor */
+	signed char crlf;      /* crlf mode          */
+} Key;
 
 /* config.h for applying patches and the configuration. */
 #include "config.h"
@@ -42,6 +71,14 @@ typedef XftColor Color;
 typedef XftGlyphFontSpec GlyphFontSpec;
 
 /* Purely graphic info */
+typedef struct {
+	int tw, th; /* tty width and height */
+	int w, h; /* window width and height */
+	int ch; /* char height */
+	int cw; /* char width  */
+	char state; /* focus, redraw, visible */
+} TermWindow;
+
 typedef struct {
 	Display *dpy;
 	Colormap cmap;
