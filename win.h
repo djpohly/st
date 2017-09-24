@@ -8,6 +8,7 @@
 void draw(void);
 void drawregion(int, int, int, int);
 
+void iso14755(const Arg *);
 void xbell(void);
 void xclipcopy(void);
 void xclippaste(void);
@@ -20,7 +21,6 @@ void xsetpointermotion(int);
 void xunloadfonts(void);
 void xresize(int, int);
 void xselpaste(void);
-unsigned long xwinid(void);
 void xsetsel(char *, Time);
 void zoom(const Arg *);
 void zoomabs(const Arg *);
