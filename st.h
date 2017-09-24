@@ -179,6 +179,16 @@ typedef struct {
 	const Arg arg;
 } Shortcut;
 
+typedef struct {
+	KeySym k;
+	uint mask;
+	char *s;
+	/* three valued logic variables: 0 indifferent, 1 on, -1 off */
+	signed char appkey;    /* application keypad */
+	signed char appcursor; /* application cursor */
+	signed char crlf;      /* crlf mode          */
+} Key;
+
 void die(const char *, ...);
 void redraw(void);
 
@@ -187,7 +197,6 @@ void tnew(int, int, unsigned int);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
-int match(uint, uint);
 void ttynew(void);
 size_t ttyread(void);
 void ttyresize(int, int);
@@ -196,7 +205,6 @@ void ttywrite(const char *, size_t);
 
 void resettitle(void);
 
-char *kmap(KeySym, uint);
 void selclear(void);
 
 void selnormalize(void);
@@ -254,6 +262,11 @@ extern MouseShortcut mshortcuts[];
 extern size_t mshortcutslen;
 extern Shortcut shortcuts[];
 extern size_t shortcutslen;
+extern KeySym mappedkeys[];
+extern size_t mappedkeyslen;
+extern Key key[];
+extern size_t keylen;
+extern uint ignoremod;
 extern uint forceselmod;
 extern uint selmasks[];
 extern size_t selmaskslen;

@@ -116,6 +116,8 @@ static void selrequest(XEvent *);
 
 static void selcopy(Time);
 static void selinit(void);
+static int match(uint, uint);
+static char *kmap(KeySym, uint);
 
 static int x2col(int);
 static int y2row(int);
@@ -1723,6 +1725,52 @@ resize(XEvent *e)
 
 	cresize(e->xconfigure.width, e->xconfigure.height);
 	ttyresize(win.tw, win.th);
+}
+
+int
+match(uint mask, uint state)
+{
+	return mask == XK_ANY_MOD || mask == (state & ~ignoremod);
+}
+
+char *
+kmap(KeySym k, uint state)
+{
+	Key *kp;
+	int i;
+
+	/* Check for mapped keys out of X11 function keys. */
+	for (i = 0; i < mappedkeyslen; i++) {
+		if (mappedkeys[i] == k)
+			break;
+	}
+	if (i == mappedkeyslen) {
+		if ((k & 0xFFFF) < 0xFD00)
+			return NULL;
+	}
+
+	for (kp = key; kp < key + keylen; kp++) {
+		if (kp->k != k)
+			continue;
+
+		if (!match(kp->mask, state))
+			continue;
+
+		if (IS_SET(MODE_APPKEYPAD) ? kp->appkey < 0 : kp->appkey > 0)
+			continue;
+		if (term.numlock && kp->appkey == 2)
+			continue;
+
+		if (IS_SET(MODE_APPCURSOR) ? kp->appcursor < 0 : kp->appcursor > 0)
+			continue;
+
+		if (IS_SET(MODE_CRLF) ? kp->crlf < 0 : kp->crlf > 0)
+			continue;
+
+		return kp->s;
+	}
+
+	return NULL;
 }
 
 void
