@@ -94,6 +94,7 @@ static int xloadfont(Font *, FcPattern *);
 static void xunloadfont(Font *);
 static void xhints(void);
 static void xinit(void);
+static void xresize(int, int);
 static void xseturgency(int);
 static void xloadfonts(char *, double);
 static void xunloadfonts(void);
@@ -115,6 +116,10 @@ static void selrequest(XEvent *);
 
 static void selcopy(Time);
 static void selinit(void);
+
+static int x2col(int);
+static int y2row(int);
+static void cresize(int, int);
 static void getbuttoninfo(XEvent *);
 static void mousereport(XEvent *);
 static void usage(void);
@@ -151,6 +156,11 @@ static DC dc;
 static XWindow xw;
 static XSelection xsel;
 
+enum window_state {
+	WIN_VISIBLE = 1,
+	WIN_FOCUSED = 2
+};
+
 /* Font Ring Cache */
 enum {
 	FRC_NORMAL,
@@ -168,6 +178,41 @@ typedef struct {
 /* Fontcache is an array now. A new font will be appended to the array. */
 static Fontcache frc[16];
 static int frclen = 0;
+
+int
+x2col(int x)
+{
+	x -= borderpx;
+	x /= win.cw;
+
+	return LIMIT(x, 0, term.col-1);
+}
+
+int
+y2row(int y)
+{
+	y -= borderpx;
+	y /= win.ch;
+
+	return LIMIT(y, 0, term.row-1);
+}
+
+void
+cresize(int width, int height)
+{
+	int col, row;
+
+	if (width != 0)
+		win.w = width;
+	if (height != 0)
+		win.h = height;
+
+	col = (win.w - 2 * borderpx) / win.cw;
+	row = (win.h - 2 * borderpx) / win.ch;
+
+	tresize(col, row);
+	xresize(col, row);
+}
 
 void
 getbuttoninfo(XEvent *e)

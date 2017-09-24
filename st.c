@@ -158,7 +158,6 @@ static void tnewline(int);
 static void tputtab(int);
 static void tputc(Rune);
 static void treset(void);
-static void tresize(int, int);
 static void tscrollup(int, int);
 static void tscrolldown(int, int);
 static void tsetattr(int *, int);
@@ -403,24 +402,6 @@ base64dec(const char *src)
 	}
 	*dst = '\0';
 	return result;
-}
-
-int
-x2col(int x)
-{
-	x -= borderpx;
-	x /= win.cw;
-
-	return LIMIT(x, 0, term.col-1);
-}
-
-int
-y2row(int y)
-{
-	y -= borderpx;
-	y /= win.ch;
-
-	return LIMIT(y, 0, term.row-1);
 }
 
 int
@@ -2569,21 +2550,4 @@ kmap(KeySym k, uint state)
 	}
 
 	return NULL;
-}
-
-void
-cresize(int width, int height)
-{
-	int col, row;
-
-	if (width != 0)
-		win.w = width;
-	if (height != 0)
-		win.h = height;
-
-	col = (win.w - 2 * borderpx) / win.cw;
-	row = (win.h - 2 * borderpx) / win.ch;
-
-	tresize(col, row);
-	xresize(col, row);
 }

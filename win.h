@@ -19,7 +19,6 @@ int xsetcolorname(int, const char *);
 void xsetenv(void);
 void xsettitle(char *);
 void xsetpointermotion(int);
-void xresize(int, int);
 void xsetsel(char *, Time);
 void zoom(const Arg *);
 void zoomabs(const Arg *);

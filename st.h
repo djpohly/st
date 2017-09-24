@@ -80,11 +80,6 @@ enum selection_snap {
 	SNAP_LINE = 2
 };
 
-enum window_state {
-	WIN_VISIBLE = 1,
-	WIN_FOCUSED = 2
-};
-
 typedef unsigned char uchar;
 typedef unsigned int uint;
 typedef unsigned long ulong;
@@ -189,6 +184,7 @@ void redraw(void);
 
 int tattrset(int);
 void tnew(int, int);
+void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
 int match(uint, uint);
@@ -201,14 +197,11 @@ void ttywrite(const char *, size_t);
 void resettitle(void);
 
 char *kmap(KeySym, uint);
-void cresize(int, int);
 void selclear(void);
 
 void selnormalize(void);
 int selected(int, int);
 char *getsel(void);
-int x2col(int);
-int y2row(int);
 
 size_t utf8decode(char *, Rune *, size_t);
 size_t utf8encode(Rune, char *);
