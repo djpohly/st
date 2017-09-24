@@ -184,6 +184,8 @@ static char *usedfont = NULL;
 static double usedfontsize = 0;
 static double defaultfontsize = 0;
 
+static int oldbutton = 3; /* button event on startup: 3 = release */
+
 int
 x2col(int x)
 {

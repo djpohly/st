@@ -201,7 +201,6 @@ char *opt_io    = NULL;
 char *opt_line  = NULL;
 char *opt_name  = NULL;
 char *opt_title = NULL;
-int oldbutton   = 3; /* button event on startup: 3 = release */
 
 static CSIEscape csiescseq;
 static STREscape strescseq;
