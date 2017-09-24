@@ -57,6 +57,15 @@ typedef struct {
 	signed char crlf;      /* crlf mode          */
 } Key;
 
+/* function definitions used in config.h */
+static void clipcopy(const Arg *);
+static void clippaste(const Arg *);
+static void iso14755(const Arg *);
+static void selpaste(const Arg *);
+static void zoom(const Arg *);
+static void zoomabs(const Arg *);
+static void zoomreset(const Arg *);
+
 /* config.h for applying patches and the configuration. */
 #include "config.h"
 

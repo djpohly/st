@@ -1,11 +1,8 @@
 /* See LICENSE for license details. */
 
+/* Functions from x.c used by st.c */
 void draw(void);
 
-void clipcopy(const Arg *);
-void clippaste(const Arg *);
-void iso14755(const Arg *);
-void selpaste(const Arg *);
 void xbell(void);
 void xclipcopy(void);
 void xloadcols(void);
@@ -14,6 +11,3 @@ void xsetenv(void);
 void xsettitle(char *);
 void xsetpointermotion(int);
 void xsetsel(char *);
-void zoom(const Arg *);
-void zoomabs(const Arg *);
-void zoomreset(const Arg *);
