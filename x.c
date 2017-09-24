@@ -95,6 +95,8 @@ static void xunloadfont(Font *);
 static void xhints(void);
 static void xinit(void);
 static void xseturgency(int);
+static void xloadfonts(char *, double);
+static void xunloadfonts(void);
 
 static void expose(XEvent *);
 static void visibility(XEvent *);
