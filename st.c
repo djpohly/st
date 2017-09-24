@@ -973,9 +973,10 @@ treset(void)
 }
 
 void
-tnew(int col, int row)
+tnew(int col, int row, unsigned int cursor)
 {
-	term = (Term){ .c = { .attr = { .fg = defaultfg, .bg = defaultbg } } };
+	term = (Term){ .c = { .attr = { .fg = defaultfg, .bg = defaultbg } },
+		.cursor = cursor };
 	tresize(col, row);
 	term.numlock = 1;
 
@@ -1745,7 +1746,7 @@ csihandle(void)
 			if (!BETWEEN(csiescseq.arg[0], 0, 6)) {
 				goto unknown;
 			}
-			win.cursor = csiescseq.arg[0];
+			term.cursor = csiescseq.arg[0];
 			break;
 		default:
 			goto unknown;

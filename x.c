@@ -1428,7 +1428,7 @@ xdrawcursor(void)
 
 	/* draw the new one */
 	if (win.state & WIN_FOCUSED) {
-		switch (win.cursor) {
+		switch (term.cursor) {
 		case 7: /* st extension: snowman */
 			utf8decode("☃", &g.u, UTF_SIZ);
 		case 0: /* Blinking Block */
@@ -1849,7 +1849,6 @@ main(int argc, char *argv[])
 {
 	xw.l = xw.t = 0;
 	xw.isfixed = False;
-	win.cursor = cursorshape;
 
 	ARGBEGIN {
 	case 'a':
@@ -1904,7 +1903,7 @@ run:
 	}
 	setlocale(LC_CTYPE, "");
 	XSetLocaleModifiers("");
-	tnew(MAX(cols, 1), MAX(rows, 1));
+	tnew(MAX(cols, 1), MAX(rows, 1), cursorshape);
 	xinit();
 	selinit();
 	run();

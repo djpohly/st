@@ -115,6 +115,7 @@ typedef struct {
 	int *dirty;  /* dirtyness of lines */
 	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
 	TCursor c;    /* cursor */
+	int cursor;   /* cursor style */
 	int top;      /* top    scroll limit */
 	int bot;      /* bottom scroll limit */
 	int mode;     /* terminal mode flags */
@@ -133,7 +134,6 @@ typedef struct {
 	int ch; /* char height */
 	int cw; /* char width  */
 	char state; /* focus, redraw, visible */
-	int cursor; /* cursor style */
 } TermWindow;
 
 typedef struct {
@@ -183,7 +183,7 @@ void die(const char *, ...);
 void redraw(void);
 
 int tattrset(int);
-void tnew(int, int);
+void tnew(int, int, unsigned int);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
