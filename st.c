@@ -176,7 +176,6 @@ static char *base64dec(const char *);
 static char base64dec_getc(const char **);
 
 static ssize_t xwrite(int, const char *, size_t);
-static void *xrealloc(void *, size_t);
 
 /* Globals */
 Term term;
@@ -2423,9 +2422,6 @@ tresize(int col, int row)
 		free(term.line[i]);
 		free(term.alt[i]);
 	}
-
-	/* resize to new width */
-	term.specbuf = xrealloc(term.specbuf, col * sizeof(GlyphFontSpec));
 
 	/* resize to new height */
 	term.line = xrealloc(term.line, row * sizeof(Line));

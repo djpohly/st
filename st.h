@@ -85,8 +85,6 @@ typedef unsigned int uint;
 typedef unsigned long ulong;
 typedef unsigned short ushort;
 
-typedef XftGlyphFontSpec GlyphFontSpec;
-
 typedef uint_least32_t Rune;
 
 #define Glyph Glyph_
@@ -113,7 +111,6 @@ typedef struct {
 	Line *line;   /* screen */
 	Line *alt;    /* alternate screen */
 	int *dirty;  /* dirtyness of lines */
-	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
 	TCursor c;    /* cursor */
 	int cursor;   /* cursor style */
 	int top;      /* top    scroll limit */
@@ -215,6 +212,7 @@ size_t utf8decode(char *, Rune *, size_t);
 size_t utf8encode(Rune, char *);
 
 void *xmalloc(size_t);
+void *xrealloc(void *, size_t);
 char *xstrdup(char *);
 
 /* Globals */
