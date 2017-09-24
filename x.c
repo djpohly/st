@@ -21,8 +21,8 @@
 static char *argv0;
 
 #include "arg.h"
-#include "win.h"
 #include "st.h"
+#include "win.h"
 
 /* XEMBED messages */
 #define XEMBED_FOCUS_IN  4
@@ -90,6 +90,7 @@ static void xdrawcursor(void);
 static int xgeommasktogravity(int);
 static int xloadfont(Font *, FcPattern *);
 static void xunloadfont(Font *);
+static void xhints(void);
 static void xinit(void);
 static void xseturgency(int);
 
@@ -412,6 +413,37 @@ xselpaste(void)
 {
 	XConvertSelection(xw.dpy, XA_PRIMARY, xsel.xtarget, XA_PRIMARY,
 			xw.win, CurrentTime);
+}
+
+void
+zoom(const Arg *arg)
+{
+	Arg larg;
+
+	larg.f = usedfontsize + arg->f;
+	zoomabs(&larg);
+}
+
+void
+zoomabs(const Arg *arg)
+{
+	xunloadfonts();
+	xloadfonts(usedfont, arg->f);
+	cresize(0, 0);
+	ttyresize();
+	redraw();
+	xhints();
+}
+
+void
+zoomreset(const Arg *arg)
+{
+	Arg larg;
+
+	if (defaultfontsize > 0) {
+		larg.f = defaultfontsize;
+		zoomabs(&larg);
+	}
 }
 
 void
