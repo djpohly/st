@@ -94,6 +94,7 @@ typedef XftGlyphFontSpec GlyphFontSpec;
 
 typedef uint_least32_t Rune;
 
+#define Glyph Glyph_
 typedef struct {
 	Rune u;           /* character code */
 	ushort mode;      /* attribute flags */

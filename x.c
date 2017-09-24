@@ -15,9 +15,6 @@
 #include <X11/Xft/Xft.h>
 #include <X11/XKBlib.h>
 
-#define Glyph Glyph_
-#define Font Font_
-
 static char *argv0;
 
 #include "arg.h"
@@ -59,6 +56,7 @@ typedef struct {
 } XSelection;
 
 /* Font structure */
+#define Font Font_
 typedef struct {
 	int height;
 	int width;

@@ -28,9 +28,6 @@
 #include <X11/cursorfont.h>
 #include <X11/Xft/Xft.h>
 
-#define Glyph Glyph_
-#define Font Font_
-
 #include "st.h"
 #include "win.h"
 
