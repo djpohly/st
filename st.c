@@ -107,16 +107,6 @@ typedef struct {
 	int narg;              /* nb of args */
 } STREscape;
 
-/* function definitions used in config.h */
-static void numlock(const Arg *);
-static void printsel(const Arg *);
-static void printscreen(const Arg *) ;
-static void toggleprinter(const Arg *);
-static void sendbreak(const Arg *);
-
-/* config.h for applying patches and the configuration. */
-#include "config.h"
-
 static void execsh(void);
 static void stty(void);
 static void sigchld(int);
@@ -199,14 +189,6 @@ static uchar utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
 static uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
 static Rune utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};
 static Rune utfmax[UTF_SIZ + 1] = {0x10FFFF, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
-
-/* config.h array lengths */
-size_t colornamelen = LEN(colorname);
-size_t mshortcutslen = LEN(mshortcuts);
-size_t shortcutslen = LEN(shortcuts);
-size_t mappedkeyslen = LEN(mappedkeys);
-size_t keylen = LEN(key);
-size_t selmaskslen = LEN(selmasks);
 
 ssize_t
 xwrite(int fd, const char *s, size_t len)

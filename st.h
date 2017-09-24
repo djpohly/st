@@ -201,6 +201,11 @@ void ttysend(char *, size_t);
 void ttywrite(const char *, size_t);
 
 void resettitle(void);
+void numlock(const Arg *);
+void printsel(const Arg *);
+void printscreen(const Arg *);
+void toggleprinter(const Arg *);
+void sendbreak(const Arg *);
 
 void selclear(void);
 
@@ -236,6 +241,11 @@ extern float cwscale;
 extern float chscale;
 extern unsigned int doubleclicktimeout;
 extern unsigned int tripleclicktimeout;
+extern char *shell;
+extern char *utmp;
+extern char *stty_args;
+extern char *vtiden;
+extern char *worddelimiters;
 extern int allowaltscreen;
 extern unsigned int xfps;
 extern unsigned int actionfps;
@@ -245,6 +255,7 @@ extern unsigned int blinktimeout;
 extern char termname[];
 extern const char *colorname[];
 extern size_t colornamelen;
+extern unsigned int tabspaces;
 extern unsigned int defaultfg;
 extern unsigned int defaultbg;
 extern unsigned int defaultcs;

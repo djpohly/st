@@ -16,12 +16,12 @@ int borderpx = 2;
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
-static char shell[] = "/bin/sh";
-static char *utmp = NULL;
-static char stty_args[] = "stty raw pass8 nl -echo -iexten -cstopb 38400";
+char *shell = "/bin/sh";
+char *utmp = NULL;
+char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 
 /* identification sequence returned in DA and DECID */
-static char vtiden[] = "\033[?6c";
+char *vtiden = "\033[?6c";
 
 /* Kerning / character bounding-box multipliers */
 float cwscale = 1.0;
@@ -32,7 +32,7 @@ float chscale = 1.0;
  *
  * More advanced example: " `'\"()[]{}"
  */
-static char worddelimiters[] = " ";
+char *worddelimiters = " ";
 
 /* selection timeouts (in milliseconds) */
 unsigned int doubleclicktimeout = 300;
@@ -80,7 +80,7 @@ char termname[] = "st-256color";
  *
  *	stty tabs
  */
-static unsigned int tabspaces = 8;
+unsigned int tabspaces = 8;
 
 /* Terminal colors (16 first used in escape sequence) */
 const char *colorname[] = {

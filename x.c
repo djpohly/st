@@ -28,6 +28,9 @@ static char *argv0;
 /* constants */
 #define ISO14755CMD		"dmenu -w %lu -p codepoint: </dev/null"
 
+/* config.h for applying patches and the configuration. */
+#include "config.h"
+
 /* macros */
 #define NUMMAXLEN(x)		((int)(sizeof(x) * 2.56 + 0.5) + 1)
 #define TRUERED(x)		(((x) & 0xff0000) >> 8)
@@ -188,6 +191,14 @@ static double usedfontsize = 0;
 static double defaultfontsize = 0;
 
 static int oldbutton = 3; /* button event on startup: 3 = release */
+
+/* config.h array lengths */
+size_t colornamelen = LEN(colorname);
+size_t mshortcutslen = LEN(mshortcuts);
+size_t shortcutslen = LEN(shortcuts);
+size_t mappedkeyslen = LEN(mappedkeys);
+size_t keylen = LEN(key);
+size_t selmaskslen = LEN(selmasks);
 
 int
 x2col(int x)
