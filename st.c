@@ -183,6 +183,7 @@ static char *utf8strchr(char *s, Rune u);
 static size_t utf8validate(Rune *, size_t);
 
 static char *base64dec(const char *);
+static char base64dec_getc(const char **);
 
 static ssize_t xwrite(int, const char *, size_t);
 static void *xrealloc(void *, size_t);
