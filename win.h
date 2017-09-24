@@ -10,7 +10,7 @@ typedef XftGlyphFontSpec GlyphFontSpec;
 void draw(void);
 void drawregion(int, int, int, int);
 
-void xbell(int);
+void xbell(void);
 void xclipcopy(void);
 void xclippaste(void);
 void xhints(void);
@@ -20,7 +20,6 @@ void xloadfonts(char *, double);
 void xsetenv(void);
 void xsettitle(char *);
 void xsetpointermotion(int);
-void xseturgency(int);
 void xunloadfonts(void);
 void xresize(int, int);
 void xselpaste(void);
