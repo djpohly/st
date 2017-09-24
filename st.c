@@ -207,10 +207,6 @@ static CSIEscape csiescseq;
 static STREscape strescseq;
 static int iofd = 1;
 
-char *usedfont = NULL;
-double usedfontsize = 0;
-double defaultfontsize = 0;
-
 static uchar utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
 static uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
 static Rune utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};

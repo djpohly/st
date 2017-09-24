@@ -179,6 +179,10 @@ typedef struct {
 static Fontcache frc[16];
 static int frclen = 0;
 
+static char *usedfont = NULL;
+static double usedfontsize = 0;
+static double defaultfontsize = 0;
+
 int
 x2col(int x)
 {
