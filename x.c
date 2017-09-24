@@ -15,11 +15,12 @@
 #include <X11/Xft/Xft.h>
 #include <X11/XKBlib.h>
 
-#include "arg.h"
-
 #define Glyph Glyph_
 #define Font Font_
 
+static char *argv0;
+
+#include "arg.h"
 #include "win.h"
 #include "st.h"
 
@@ -89,6 +90,7 @@ static void xdrawcursor(void);
 static int xgeommasktogravity(int);
 static int xloadfont(Font *, FcPattern *);
 static void xunloadfont(Font *);
+static void xinit(void);
 
 static void expose(XEvent *);
 static void visibility(XEvent *);
@@ -108,6 +110,8 @@ static void selrequest(XEvent *);
 static void selcopy(Time);
 static void getbuttoninfo(XEvent *);
 static void mousereport(XEvent *);
+static void usage(void);
+static void run(void);
 
 static void (*handler[LASTEvent])(XEvent *) = {
 	[KeyPress] = kpress,
@@ -1699,6 +1703,19 @@ run(void)
 			}
 		}
 	}
+}
+
+void
+usage(void)
+{
+	die("usage: %s [-aiv] [-c class] [-f font] [-g geometry]"
+	    " [-n name] [-o file]\n"
+	    "          [-T title] [-t title] [-w windowid]"
+	    " [[-e] command [args ...]]\n"
+	    "       %s [-aiv] [-c class] [-f font] [-g geometry]"
+	    " [-n name] [-o file]\n"
+	    "          [-T title] [-t title] [-w windowid] -l line"
+	    " [stty_args ...]\n", argv0, argv0);
 }
 
 int
