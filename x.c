@@ -152,6 +152,7 @@ static void (*handler[LASTEvent])(XEvent *) = {
 };
 
 /* Globals */
+static TermWindow win;
 static DC dc;
 static XWindow xw;
 static XSelection xsel;
@@ -484,7 +485,7 @@ zoomabs(const Arg *arg)
 	xunloadfonts();
 	xloadfonts(usedfont, arg->f);
 	cresize(0, 0);
-	ttyresize();
+	ttyresize(win.tw, win.th);
 	redraw();
 	xhints();
 }
@@ -1719,7 +1720,7 @@ resize(XEvent *e)
 		return;
 
 	cresize(e->xconfigure.width, e->xconfigure.height);
-	ttyresize();
+	ttyresize(win.tw, win.th);
 }
 
 void
@@ -1750,7 +1751,7 @@ run(void)
 
 	cresize(w, h);
 	ttynew();
-	ttyresize();
+	ttyresize(win.tw, win.th);
 
 	clock_gettime(CLOCK_MONOTONIC, &last);
 	lastblink = last;

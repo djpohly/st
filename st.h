@@ -190,7 +190,7 @@ void tsetdirtattr(int);
 int match(uint, uint);
 void ttynew(void);
 size_t ttyread(void);
-void ttyresize(void);
+void ttyresize(int, int);
 void ttysend(char *, size_t);
 void ttywrite(const char *, size_t);
 
@@ -210,7 +210,6 @@ void *xmalloc(size_t);
 char *xstrdup(char *);
 
 /* Globals */
-extern TermWindow win;
 extern Term term;
 extern Selection sel;
 extern int cmdfd;
