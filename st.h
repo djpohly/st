@@ -204,7 +204,6 @@ char *kmap(KeySym, uint);
 void cresize(int, int);
 void selclear(void);
 
-void selinit(void);
 void selnormalize(void);
 int selected(int, int);
 char *getsel(void);

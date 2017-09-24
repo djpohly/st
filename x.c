@@ -114,6 +114,7 @@ static void selclear_(XEvent *);
 static void selrequest(XEvent *);
 
 static void selcopy(Time);
+static void selinit(void);
 static void getbuttoninfo(XEvent *);
 static void mousereport(XEvent *);
 static void usage(void);
@@ -413,7 +414,7 @@ selnotify(XEvent *e)
 }
 
 void
-xselpaste(void)
+selpaste(const Arg *dummy)
 {
 	XConvertSelection(xw.dpy, XA_PRIMARY, xsel.xtarget, XA_PRIMARY,
 			xw.win, CurrentTime);
@@ -451,7 +452,7 @@ zoomreset(const Arg *arg)
 }
 
 void
-xclipcopy(void)
+clipcopy(const Arg *dummy)
 {
 	Atom clipboard;
 
@@ -466,7 +467,13 @@ xclipcopy(void)
 }
 
 void
-xclippaste(void)
+xclipcopy()
+{
+	clipcopy(NULL);
+}
+
+void
+clippaste(const Arg *dummy)
 {
 	Atom clipboard;
 
@@ -559,7 +566,7 @@ brelease(XEvent *e)
 	}
 
 	if (e->xbutton.button == Button2) {
-		xselpaste();
+		selpaste(NULL);
 	} else if (e->xbutton.button == Button1) {
 		if (sel.mode == SEL_READY) {
 			getbuttoninfo(e);
@@ -1022,6 +1029,18 @@ xinit(void)
 	xsel.xtarget = XInternAtom(xw.dpy, "UTF8_STRING", 0);
 	if (xsel.xtarget == None)
 		xsel.xtarget = XA_STRING;
+}
+
+void
+selinit(void)
+{
+	clock_gettime(CLOCK_MONOTONIC, &sel.tclick1);
+	clock_gettime(CLOCK_MONOTONIC, &sel.tclick2);
+	sel.mode = SEL_IDLE;
+	sel.snap = 0;
+	sel.ob.x = -1;
+	sel.primary = NULL;
+	sel.clipboard = NULL;
 }
 
 int

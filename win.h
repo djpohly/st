@@ -8,17 +8,18 @@
 void draw(void);
 void drawregion(int, int, int, int);
 
+void clipcopy(const Arg *);
+void clippaste(const Arg *);
 void iso14755(const Arg *);
+void selpaste(const Arg *);
 void xbell(void);
 void xclipcopy(void);
-void xclippaste(void);
 void xloadcols(void);
 int xsetcolorname(int, const char *);
 void xsetenv(void);
 void xsettitle(char *);
 void xsetpointermotion(int);
 void xresize(int, int);
-void xselpaste(void);
 void xsetsel(char *, Time);
 void zoom(const Arg *);
 void zoomabs(const Arg *);
