@@ -1,7 +1,6 @@
 /* See LICENSE for license details. */
 
 void draw(void);
-void drawregion(int, int, int, int);
 
 void clipcopy(const Arg *);
 void clippaste(const Arg *);
