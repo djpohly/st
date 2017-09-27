@@ -162,7 +162,9 @@ void die(const char *, ...);
 void redraw(void);
 
 int tattrset(int);
+void techo(Rune);
 void tnew(int, int, unsigned int);
+void tputc(Rune);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
