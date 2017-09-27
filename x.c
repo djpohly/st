@@ -1858,7 +1858,7 @@ run(void)
 	} while (ev.type != MapNotify);
 
 	cresize(w, h);
-	ttynew();
+	ttynew(term.col, term.row);
 	ttyresize(win.tw, win.th);
 
 	clock_gettime(CLOCK_MONOTONIC, &last);

@@ -162,7 +162,7 @@ void tnew(int, int, unsigned int);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
-void ttynew(void);
+void ttynew(int, int);
 size_t ttyread(void);
 void ttyresize(int, int);
 void ttysend(char *, size_t);

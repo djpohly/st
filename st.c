@@ -662,10 +662,10 @@ stty(void)
 }
 
 void
-ttynew(void)
+ttynew(int cols, int rows)
 {
 	int m, s;
-	struct winsize w = {term.row, term.col, 0, 0};
+	struct winsize w = {rows, cols, 0, 0};
 
 	if (opt_line) {
 		if ((cmdfd = open(opt_line, O_RDWR)) < 0)
