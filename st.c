@@ -667,17 +667,6 @@ ttynew(void)
 	int m, s;
 	struct winsize w = {term.row, term.col, 0, 0};
 
-	if (opt_io) {
-		term.mode |= MODE_PRINT;
-		iofd = (!strcmp(opt_io, "-")) ? 1 :
-			open(opt_io, O_WRONLY | O_CREAT, 0666);
-		if (iofd < 0) {
-			fprintf(stderr, "Error opening %s:%s\n",
-				opt_io, strerror(errno));
-		}
-		fcntl(iofd, F_SETFL, fcntl(iofd, F_GETFL) | FD_CLOEXEC);
-	}
-
 	if (opt_line) {
 		if ((cmdfd = open(opt_line, O_RDWR)) < 0)
 			die("open line failed: %s\n", strerror(errno));
@@ -949,6 +938,17 @@ tnew(int col, int row, unsigned int cursor)
 	term.numlock = 1;
 
 	treset();
+
+	if (opt_io) {
+		term.mode |= MODE_PRINT;
+		iofd = (!strcmp(opt_io, "-")) ? 1 :
+			open(opt_io, O_WRONLY | O_CREAT, 0666);
+		if (iofd < 0) {
+			fprintf(stderr, "Error opening %s:%s\n",
+				opt_io, strerror(errno));
+		}
+		fcntl(iofd, F_SETFL, fcntl(iofd, F_GETFL) | FD_CLOEXEC);
+	}
 }
 
 void
