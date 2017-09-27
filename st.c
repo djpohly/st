@@ -669,12 +669,13 @@ ttynew(void)
 
 	if (opt_io) {
 		term.mode |= MODE_PRINT;
-		iofd = (!strcmp(opt_io, "-")) ?
-			  1 : open(opt_io, O_WRONLY | O_CREAT, 0666);
+		iofd = (!strcmp(opt_io, "-")) ? 1 :
+			open(opt_io, O_WRONLY | O_CREAT, 0666);
 		if (iofd < 0) {
 			fprintf(stderr, "Error opening %s:%s\n",
 				opt_io, strerror(errno));
 		}
+		fcntl(iofd, F_SETFL, fcntl(iofd, F_GETFL) | FD_CLOEXEC);
 	}
 
 	if (opt_line) {
@@ -694,7 +695,6 @@ ttynew(void)
 		die("fork failed\n");
 		break;
 	case 0:
-		close(iofd);
 		setsid(); /* create a new process group */
 		dup2(s, 0);
 		dup2(s, 1);
