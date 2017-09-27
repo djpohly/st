@@ -238,6 +238,11 @@ static char *usedfont = NULL;
 static double usedfontsize = 0;
 static double defaultfontsize = 0;
 
+static char *opt_class = NULL;
+static char *opt_embed = NULL;
+static char *opt_font  = NULL;
+static char *opt_name  = NULL;
+
 static int oldbutton = 3; /* button event on startup: 3 = release */
 
 int
