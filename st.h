@@ -1,5 +1,9 @@
 /* See LICENSE for license details. */
 
+#include <stdint.h>
+#include <sys/types.h>
+#include <time.h>
+
 /* Arbitrary sizes */
 #define UTF_SIZ       4
 
