@@ -164,7 +164,6 @@ static ssize_t xwrite(int, const char *, size_t);
 /* Globals */
 Term term;
 Selection sel;
-int cmdfd;
 pid_t pid;
 char **opt_cmd  = NULL;
 char *opt_io    = NULL;
@@ -173,6 +172,7 @@ char *opt_title = NULL;
 static CSIEscape csiescseq;
 static STREscape strescseq;
 static int iofd = 1;
+static int cmdfd;
 
 static uchar utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
 static uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
@@ -654,7 +654,7 @@ stty(void)
 	    perror("Couldn't call stty");
 }
 
-void
+int
 ttynew(int cols, int rows, char *line)
 {
 	int m, s;
@@ -665,7 +665,7 @@ ttynew(int cols, int rows, char *line)
 			die("open line failed: %s\n", strerror(errno));
 		dup2(cmdfd, 0);
 		stty();
-		return;
+		return cmdfd;
 	}
 
 	/* seems to work fine on linux, openbsd and freebsd */
@@ -693,6 +693,7 @@ ttynew(int cols, int rows, char *line)
 		signal(SIGCHLD, sigchld);
 		break;
 	}
+	return cmdfd;
 }
 
 size_t

@@ -168,7 +168,7 @@ void tputc(Rune);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
-void ttynew(int, int, char *);
+int ttynew(int, int, char *);
 size_t ttyread(void);
 void ttyresize(int, int);
 void ttysend(char *, size_t);
@@ -197,7 +197,6 @@ char *xstrdup(char *);
 /* Globals */
 extern Term term;
 extern Selection sel;
-extern int cmdfd;
 extern pid_t pid;
 extern char **opt_cmd;
 extern char *opt_io;
