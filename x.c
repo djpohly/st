@@ -241,6 +241,7 @@ static double defaultfontsize = 0;
 static char *opt_class = NULL;
 static char *opt_embed = NULL;
 static char *opt_font  = NULL;
+static char *opt_line = NULL;
 static char *opt_name  = NULL;
 
 static int oldbutton = 3; /* button event on startup: 3 = release */
@@ -1863,7 +1864,7 @@ run(void)
 	} while (ev.type != MapNotify);
 
 	cresize(w, h);
-	ttynew(term.col, term.row);
+	ttynew(term.col, term.row, opt_line);
 	ttyresize(win.tw, win.th);
 
 	clock_gettime(CLOCK_MONOTONIC, &last);

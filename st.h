@@ -162,7 +162,7 @@ void tnew(int, int, unsigned int);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
-void ttynew(int, int);
+void ttynew(int, int, char *);
 size_t ttyread(void);
 void ttyresize(int, int);
 void ttysend(char *, size_t);
@@ -195,7 +195,6 @@ extern int cmdfd;
 extern pid_t pid;
 extern char **opt_cmd;
 extern char *opt_io;
-extern char *opt_line;
 extern char *opt_title;
 
 /* config.h globals */

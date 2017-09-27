@@ -170,7 +170,6 @@ int cmdfd;
 pid_t pid;
 char **opt_cmd  = NULL;
 char *opt_io    = NULL;
-char *opt_line  = NULL;
 char *opt_title = NULL;
 
 static CSIEscape csiescseq;
@@ -658,13 +657,13 @@ stty(void)
 }
 
 void
-ttynew(int cols, int rows)
+ttynew(int cols, int rows, char *line)
 {
 	int m, s;
 	struct winsize w = {rows, cols, 0, 0};
 
-	if (opt_line) {
-		if ((cmdfd = open(opt_line, O_RDWR)) < 0)
+	if (line) {
+		if ((cmdfd = open(line, O_RDWR)) < 0)
 			die("open line failed: %s\n", strerror(errno));
 		dup2(cmdfd, 0);
 		stty();
