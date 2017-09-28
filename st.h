@@ -124,7 +124,6 @@ typedef struct {
 	char trantbl[4]; /* charset table translation */
 	int charset;  /* current charset */
 	int icharset; /* selected charset for sequence */
-	int numlock; /* lock numbers in keyboard */
 	int *tabs;
 } Term;
 
@@ -174,7 +173,6 @@ void ttywrite(const char *, size_t);
 void ttyhangup(void);
 
 void resettitle(void);
-void numlock(const Arg *);
 void printsel(const Arg *);
 void printscreen(const Arg *);
 void toggleprinter(const Arg *);

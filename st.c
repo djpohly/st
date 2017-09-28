@@ -884,8 +884,6 @@ tnew(int col, int row, unsigned int cursor)
 	term = (Term){ .c = { .attr = { .fg = defaultfg, .bg = defaultbg } },
 		.cursor = cursor };
 	tresize(col, row);
-	term.numlock = 1;
-
 	treset();
 
 	if (opt_io) {
@@ -2426,10 +2424,4 @@ redraw(void)
 {
 	tfulldirt();
 	draw();
-}
-
-void
-numlock(const Arg *dummy)
-{
-	term.numlock ^= 1;
 }

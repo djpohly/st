@@ -59,6 +59,7 @@ typedef struct {
 static void clipcopy(const Arg *);
 static void clippaste(const Arg *);
 static void iso14755(const Arg *);
+static void numlock(const Arg *);
 static void selpaste(const Arg *);
 static void zoom(const Arg *);
 static void zoomabs(const Arg *);
@@ -83,6 +84,7 @@ typedef struct {
 	int w, h; /* window width and height */
 	int ch; /* char height */
 	int cw; /* char width  */
+	int numlock; /* lock numbers in keyboard */
 	char state; /* focus, redraw, visible */
 } TermWindow;
 
@@ -1145,6 +1147,7 @@ xinit(void)
 	XChangeProperty(xw.dpy, xw.win, xw.netwmpid, XA_CARDINAL, 32,
 			PropModeReplace, (uchar *)&thispid, 1);
 
+	win.numlock = 1;
 	resettitle();
 	XMapWindow(xw.dpy, xw.win);
 	xhints();
@@ -1802,6 +1805,12 @@ match(uint mask, uint state)
 	return mask == XK_ANY_MOD || mask == (state & ~ignoremod);
 }
 
+void
+numlock(const Arg *dummy)
+{
+	win.numlock ^= 1;
+}
+
 char *
 kmap(KeySym k, uint state)
 {
@@ -1827,7 +1836,7 @@ kmap(KeySym k, uint state)
 
 		if (IS_SET(MODE_APPKEYPAD) ? kp->appkey < 0 : kp->appkey > 0)
 			continue;
-		if (term.numlock && kp->appkey == 2)
+		if (win.numlock && kp->appkey == 2)
 			continue;
 
 		if (IS_SET(MODE_APPCURSOR) ? kp->appcursor < 0 : kp->appcursor > 0)
