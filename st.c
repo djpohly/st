@@ -123,6 +123,7 @@ static int tlinelen(int);
 static void tmoveto(int, int);
 static void tmoveato(int, int);
 static void tnewline(int);
+static void tputc(Rune, int);
 static void tputtab(int);
 static void treset(void);
 static void tscrollup(int, int);
