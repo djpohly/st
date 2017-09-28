@@ -250,18 +250,16 @@ int
 x2col(int x)
 {
 	x -= borderpx;
-	x /= win.cw;
-
-	return LIMIT(x, 0, term.col-1);
+	LIMIT(x, 0, win.tw);
+	return x / win.cw;
 }
 
 int
 y2row(int y)
 {
 	y -= borderpx;
-	y /= win.ch;
-
-	return LIMIT(y, 0, term.row-1);
+	LIMIT(y, 0, win.th);
+	return y / win.ch;
 }
 
 void
