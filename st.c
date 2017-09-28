@@ -2305,32 +2305,23 @@ check_control_code:
 int
 twrite(char *buf, int buflen, int show_ctrl)
 {
-	char *ptr = buf;
 	int charsize;
 	Rune unicodep;
-	int ret = 0;
+	int n;
 
-	for (;;) {
+	for (n = 0; n < buflen; n += charsize) {
 		if (IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
 			/* process a complete utf8 char */
-			charsize = utf8decode(ptr, &unicodep, buflen);
+			charsize = utf8decode(buf + n, &unicodep, buflen - n);
 			if (charsize == 0)
 				break;
-			tputc(unicodep, show_ctrl);
-			ret += charsize;
-			ptr += charsize;
-			buflen -= charsize;
-
 		} else {
-			if (buflen <= 0)
-				break;
-			tputc(*ptr++ & 0xFF, show_ctrl);
-			ret++;
-			buflen--;
+			unicodep = buf[n] & 0xFF;
+			charsize = 1;
 		}
+		tputc(unicodep, show_ctrl);
 	}
-
-	return ret;
+	return n;
 }
 
 void
