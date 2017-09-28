@@ -174,7 +174,6 @@ static int x2col(int);
 static int y2row(int);
 static void cresize(int, int);
 static void ttysend(char *s, size_t n);
-static void techo(Rune);
 static void getbuttoninfo(XEvent *);
 static void mousereport(XEvent *);
 static void usage(void);
@@ -283,12 +282,6 @@ cresize(int width, int height)
 }
 
 void
-techo(Rune u)
-{
-	tputc(u, 1);
-}
-
-void
 ttysend(char *s, size_t n)
 {
 	int len;
@@ -309,7 +302,7 @@ ttysend(char *s, size_t n)
 		}
 		if (len <= 0)
 			break;
-		techo(u);
+		tputc(u, 1);
 		n -= len;
 	}
 }
