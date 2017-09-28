@@ -2169,6 +2169,17 @@ tputc(Rune u, int show_ctrl)
 	Glyph *gp;
 
 	control = ISCONTROL(u);
+	if (control && show_ctrl) {
+		if (u & 0x80) {
+			u &= 0x7f;
+			tputc('^', 0);
+			tputc('[', 0);
+		} else if (u != '\n' && u != '\r' && u != '\t') {
+			u ^= 0x40;
+			tputc('^', 0);
+		}
+		control = ISCONTROL(u);
+	}
 	if (!IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
 		c[0] = u;
 		width = len = 1;

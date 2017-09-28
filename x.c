@@ -285,17 +285,7 @@ cresize(int width, int height)
 void
 techo(Rune u)
 {
-	if (ISCONTROL(u)) { /* control code */
-		if (u & 0x80) {
-			u &= 0x7f;
-			tputc('^', 0);
-			tputc('[', 0);
-		} else if (u != '\n' && u != '\r' && u != '\t') {
-			u ^= 0x40;
-			tputc('^', 0);
-		}
-	}
-	tputc(u, 0);
+	tputc(u, 1);
 }
 
 void
