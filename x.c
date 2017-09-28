@@ -147,7 +147,7 @@ static int xloadfont(Font *, FcPattern *);
 static void xunloadfont(Font *);
 static int xloadcolor(int, const char *, Color *);
 static void xhints(void);
-static void xinit(void);
+static void xinit(int, int);
 static void xresize(int, int);
 static void xseturgency(int);
 static void xloadfonts(char *, double);
@@ -1039,7 +1039,7 @@ xunloadfonts(void)
 }
 
 void
-xinit(void)
+xinit(int cols, int rows)
 {
 	XGCValues gcvalues;
 	Cursor cursor;
@@ -1064,8 +1064,8 @@ xinit(void)
 	xloadcols();
 
 	/* adjust fixed window geometry */
-	win.w = 2 * borderpx + term.col * win.cw;
-	win.h = 2 * borderpx + term.row * win.ch;
+	win.w = 2 * borderpx + cols * win.cw;
+	win.h = 2 * borderpx + rows * win.ch;
 	if (xw.gm & XNegative)
 		xw.l += DisplayWidth(xw.dpy, xw.scr) - win.w - 2;
 	if (xw.gm & YNegative)
@@ -1097,7 +1097,7 @@ xinit(void)
 	XFillRectangle(xw.dpy, xw.buf, dc.gc, 0, 0, win.w, win.h);
 
 	/* font spec buffer */
-	xw.specbuf = xmalloc(term.col * sizeof(GlyphFontSpec));
+	xw.specbuf = xmalloc(cols * sizeof(GlyphFontSpec));
 
 	/* Xft rendering context */
 	xw.draw = XftDrawCreate(xw.dpy, xw.buf, xw.vis, xw.cmap);
@@ -2034,8 +2034,10 @@ run:
 	}
 	setlocale(LC_CTYPE, "");
 	XSetLocaleModifiers("");
-	tnew(MAX(cols, 1), MAX(rows, 1), cursorshape);
-	xinit();
+	cols = MAX(cols, 1);
+	rows = MAX(rows, 1);
+	tnew(cols, rows, cursorshape);
+	xinit(cols, rows);
 	selinit();
 	run();
 
