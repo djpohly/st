@@ -105,8 +105,8 @@ typedef struct {
 typedef struct {
 	Atom xtarget;
 	char *primary, *clipboard;
-	struct timespec tclick1;
-	struct timespec tclick2;
+	int clicks;
+	struct timespec tclick;
 } XSelection;
 
 /* Font structure */
@@ -409,7 +409,6 @@ bpress(XEvent *e)
 {
 	struct timespec now;
 	MouseShortcut *ms;
-	int snap;
 
 	if (IS_SET(MODE_MOUSE) && !(e->xbutton.state & forceselmod)) {
 		mousereport(e);
@@ -430,17 +429,13 @@ bpress(XEvent *e)
 		 * snapping behaviour is exposed.
 		 */
 		clock_gettime(CLOCK_MONOTONIC, &now);
-		if (TIMEDIFF(now, xsel.tclick2) <= tripleclicktimeout) {
-			snap = SNAP_LINE;
-		} else if (TIMEDIFF(now, xsel.tclick1) <= doubleclicktimeout) {
-			snap = SNAP_WORD;
-		} else {
-			snap = 0;
-		}
-		xsel.tclick2 = xsel.tclick1;
-		xsel.tclick1 = now;
+		if (TIMEDIFF(now, xsel.tclick) > clicktimeout)
+			xsel.clicks = 0;
+		LIMIT(xsel.clicks, 0, 2);
 
-		selstart(evcol(e), evrow(e), snap);
+		selstart(evcol(e), evrow(e), xsel.clicks);
+		xsel.tclick = now;
+		xsel.clicks++;
 	}
 }
 
@@ -1105,8 +1100,7 @@ xinit(int cols, int rows)
 	xhints();
 	XSync(xw.dpy, False);
 
-	clock_gettime(CLOCK_MONOTONIC, &xsel.tclick1);
-	clock_gettime(CLOCK_MONOTONIC, &xsel.tclick2);
+	xsel.clicks = 0;
 	xsel.primary = NULL;
 	xsel.clipboard = NULL;
 	xsel.xtarget = XInternAtom(xw.dpy, "UTF8_STRING", 0);
