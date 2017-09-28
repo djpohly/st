@@ -186,7 +186,6 @@ void selnormalize(void);
 int selected(int, int);
 char *getsel(void);
 
-size_t utf8decode(char *, Rune *, size_t);
 size_t utf8encode(Rune, char *);
 
 void *xmalloc(size_t);

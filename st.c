@@ -144,6 +144,7 @@ static void tstrsequence(uchar);
 static void selscroll(int, int);
 static void selsnap(int *, int *, int);
 
+static size_t utf8decode(char *, Rune *, size_t);
 static Rune utf8decodebyte(char, size_t *);
 static char utf8encodebyte(Rune, size_t);
 static char *utf8strchr(char *s, Rune u);
