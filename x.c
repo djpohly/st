@@ -174,6 +174,7 @@ static int x2col(int);
 static int y2row(int);
 static void cresize(int, int);
 static void ttysend(char *s, size_t n);
+static void techo(Rune);
 static void getbuttoninfo(XEvent *);
 static void mousereport(XEvent *);
 static void usage(void);
@@ -279,6 +280,22 @@ cresize(int width, int height)
 
 	tresize(col, row);
 	xresize(col, row);
+}
+
+void
+techo(Rune u)
+{
+	if (ISCONTROL(u)) { /* control code */
+		if (u & 0x80) {
+			u &= 0x7f;
+			tputc('^');
+			tputc('[');
+		} else if (u != '\n' && u != '\r' && u != '\t') {
+			u ^= 0x40;
+			tputc('^');
+		}
+	}
+	tputc(u);
 }
 
 void

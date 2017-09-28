@@ -1918,22 +1918,6 @@ tputtab(int n)
 }
 
 void
-techo(Rune u)
-{
-	if (ISCONTROL(u)) { /* control code */
-		if (u & 0x80) {
-			u &= 0x7f;
-			tputc('^');
-			tputc('[');
-		} else if (u != '\n' && u != '\r' && u != '\t') {
-			u ^= 0x40;
-			tputc('^');
-		}
-	}
-	tputc(u);
-}
-
-void
 tdefutf8(char ascii)
 {
 	if (ascii == 'G')
