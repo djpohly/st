@@ -161,6 +161,7 @@ void die(const char *, ...);
 void redraw(void);
 
 int tattrset(int);
+int tlinelen(int);
 void tnew(int, int, unsigned int);
 int twrite(char *, int, int);
 void tresize(int, int);
@@ -185,6 +186,7 @@ int selected(int, int);
 char *getsel(void);
 
 size_t utf8encode(Rune, char *);
+char *utf8strchr(char *s, Rune u);
 
 void *xmalloc(size_t);
 void *xrealloc(void *, size_t);
@@ -192,7 +194,6 @@ char *xstrdup(char *);
 
 /* Globals */
 extern Term term;
-extern Selection sel;
 extern char **opt_cmd;
 extern char *opt_io;
 extern char *opt_title;

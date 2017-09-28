@@ -70,6 +70,7 @@ static void zoomreset(const Arg *);
 
 /* macros */
 #define NUMMAXLEN(x)		((int)(sizeof(x) * 2.56 + 0.5) + 1)
+#define ISDELIM(u)		(utf8strchr(worddelimiters, u) != NULL)
 #define TRUERED(x)		(((x) & 0xff0000) >> 8)
 #define TRUEGREEN(x)		(((x) & 0xff00))
 #define TRUEBLUE(x)		(((x) & 0xff) << 8)
@@ -168,6 +169,7 @@ static void selnotify(XEvent *);
 static void selclear_(XEvent *);
 static void selrequest(XEvent *);
 static void selinit(void);
+static void selsnap(int *, int *, int);
 static void setsel(char *, Time);
 static int match(uint, uint);
 static char *kmap(KeySym, uint);
@@ -208,6 +210,7 @@ static void (*handler[LASTEvent])(XEvent *) = {
 };
 
 /* Globals */
+Selection sel;
 static TermWindow win;
 static DC dc;
 static XWindow xw;
@@ -1168,6 +1171,162 @@ selinit(void)
 	sel.ob.x = -1;
 	sel.primary = NULL;
 	sel.clipboard = NULL;
+}
+
+void
+selclear(void)
+{
+	if (sel.ob.x == -1)
+		return;
+	sel.mode = SEL_IDLE;
+	sel.ob.x = -1;
+	tsetdirt(sel.nb.y, sel.ne.y);
+}
+
+void
+selsnap(int *x, int *y, int direction)
+{
+	int newx, newy, xt, yt;
+	int delim, prevdelim;
+	Glyph *gp, *prevgp;
+
+	switch (sel.snap) {
+	case SNAP_WORD:
+		/*
+		 * Snap around if the word wraps around at the end or
+		 * beginning of a line.
+		 */
+		prevgp = &term.line[*y][*x];
+		prevdelim = ISDELIM(prevgp->u);
+		for (;;) {
+			newx = *x + direction;
+			newy = *y;
+			if (!BETWEEN(newx, 0, term.col - 1)) {
+				newy += direction;
+				newx = (newx + term.col) % term.col;
+				if (!BETWEEN(newy, 0, term.row - 1))
+					break;
+
+				if (direction > 0)
+					yt = *y, xt = *x;
+				else
+					yt = newy, xt = newx;
+				if (!(term.line[yt][xt].mode & ATTR_WRAP))
+					break;
+			}
+
+			if (newx >= tlinelen(newy))
+				break;
+
+			gp = &term.line[newy][newx];
+			delim = ISDELIM(gp->u);
+			if (!(gp->mode & ATTR_WDUMMY) && (delim != prevdelim
+					|| (delim && gp->u != prevgp->u)))
+				break;
+
+			*x = newx;
+			*y = newy;
+			prevgp = gp;
+			prevdelim = delim;
+		}
+		break;
+	case SNAP_LINE:
+		/*
+		 * Snap around if the the previous line or the current one
+		 * has set ATTR_WRAP at its end. Then the whole next or
+		 * previous line will be selected.
+		 */
+		*x = (direction < 0) ? 0 : term.col - 1;
+		if (direction < 0) {
+			for (; *y > 0; *y += direction) {
+				if (!(term.line[*y-1][term.col-1].mode
+						& ATTR_WRAP)) {
+					break;
+				}
+			}
+		} else if (direction > 0) {
+			for (; *y < term.row-1; *y += direction) {
+				if (!(term.line[*y][term.col-1].mode
+						& ATTR_WRAP)) {
+					break;
+				}
+			}
+		}
+		break;
+	}
+}
+
+void
+selnormalize(void)
+{
+	int i;
+
+	if (sel.type == SEL_REGULAR && sel.ob.y != sel.oe.y) {
+		sel.nb.x = sel.ob.y < sel.oe.y ? sel.ob.x : sel.oe.x;
+		sel.ne.x = sel.ob.y < sel.oe.y ? sel.oe.x : sel.ob.x;
+	} else {
+		sel.nb.x = MIN(sel.ob.x, sel.oe.x);
+		sel.ne.x = MAX(sel.ob.x, sel.oe.x);
+	}
+	sel.nb.y = MIN(sel.ob.y, sel.oe.y);
+	sel.ne.y = MAX(sel.ob.y, sel.oe.y);
+
+	selsnap(&sel.nb.x, &sel.nb.y, -1);
+	selsnap(&sel.ne.x, &sel.ne.y, +1);
+
+	/* expand selection over line breaks */
+	if (sel.type == SEL_RECTANGULAR)
+		return;
+	i = tlinelen(sel.nb.y);
+	if (i < sel.nb.x)
+		sel.nb.x = i;
+	if (tlinelen(sel.ne.y) <= sel.ne.x)
+		sel.ne.x = term.col - 1;
+}
+
+int
+selected(int x, int y)
+{
+	if (sel.mode == SEL_EMPTY)
+		return 0;
+
+	if (sel.type == SEL_RECTANGULAR)
+		return BETWEEN(y, sel.nb.y, sel.ne.y)
+		    && BETWEEN(x, sel.nb.x, sel.ne.x);
+
+	return BETWEEN(y, sel.nb.y, sel.ne.y)
+	    && (y != sel.nb.y || x >= sel.nb.x)
+	    && (y != sel.ne.y || x <= sel.ne.x);
+}
+
+void
+selscroll(int orig, int n)
+{
+	if (sel.ob.x == -1)
+		return;
+
+	if (BETWEEN(sel.ob.y, orig, term.bot) || BETWEEN(sel.oe.y, orig, term.bot)) {
+		if ((sel.ob.y += n) > term.bot || (sel.oe.y += n) < term.top) {
+			selclear();
+			return;
+		}
+		if (sel.type == SEL_RECTANGULAR) {
+			if (sel.ob.y < term.top)
+				sel.ob.y = term.top;
+			if (sel.oe.y > term.bot)
+				sel.oe.y = term.bot;
+		} else {
+			if (sel.ob.y < term.top) {
+				sel.ob.y = term.top;
+				sel.ob.x = 0;
+			}
+			if (sel.oe.y > term.bot) {
+				sel.oe.y = term.bot;
+				sel.oe.x = term.col;
+			}
+		}
+		selnormalize();
+	}
 }
 
 int
