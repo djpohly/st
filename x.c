@@ -1524,8 +1524,8 @@ xdrawcursor(void)
 	/* draw the new one */
 	if (win.state & WIN_FOCUSED) {
 		switch (term.cursor) {
-		case 7: /* st extension: snowman */
-			utf8decode("☃", &g.u, UTF_SIZ);
+		case 7: /* st extension: snowman (U+2603) */
+			g.u = 0x2603;
 		case 0: /* Blinking Block */
 		case 1: /* Blinking Block (Default) */
 		case 2: /* Steady Block */
