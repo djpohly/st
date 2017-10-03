@@ -174,7 +174,6 @@ void ttyresize(int, int);
 void ttywrite(const char *, size_t);
 void ttyhangup(void);
 
-void resettitle(void);
 void printsel(const Arg *);
 void printscreen(const Arg *);
 void toggleprinter(const Arg *);

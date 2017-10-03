@@ -1154,7 +1154,7 @@ xinit(int cols, int rows)
 			PropModeReplace, (uchar *)&thispid, 1);
 
 	win.numlock = 1;
-	resettitle();
+	xsettitle(NULL);
 	XMapWindow(xw.dpy, xw.win);
 	xhints();
 	XSync(xw.dpy, False);

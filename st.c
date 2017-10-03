@@ -1956,7 +1956,7 @@ eschandle(uchar ascii)
 		break;
 	case 'c': /* RIS -- Reset to inital state */
 		treset();
-		resettitle();
+		xsettitle(NULL);
 		xloadcols();
 		break;
 	case '=': /* DECPAM -- Application keypad */
@@ -2243,12 +2243,6 @@ tresize(int col, int row)
 		tcursor(CURSOR_LOAD);
 	}
 	term.c = c;
-}
-
-void
-resettitle(void)
-{
-	xsettitle(NULL);
 }
 
 void
