@@ -282,6 +282,7 @@ cresize(int width, int height)
 
 	tresize(col, row);
 	xresize(col, row);
+	ttyresize(win.tw, win.th);
 }
 
 void
@@ -552,7 +553,6 @@ zoomabs(const Arg *arg)
 	xunloadfonts();
 	xloadfonts(usedfont, arg->f);
 	cresize(0, 0);
-	ttyresize(win.tw, win.th);
 	redraw();
 	xhints();
 }
@@ -1955,7 +1955,6 @@ resize(XEvent *e)
 		return;
 
 	cresize(e->xconfigure.width, e->xconfigure.height);
-	ttyresize(win.tw, win.th);
 }
 
 int
@@ -2040,7 +2039,6 @@ run(void)
 
 	ttyfd = ttynew(opt_line);
 	cresize(w, h);
-	ttyresize(win.tw, win.th);
 
 	clock_gettime(CLOCK_MONOTONIC, &last);
 	lastblink = last;
