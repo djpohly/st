@@ -2038,8 +2038,8 @@ run(void)
 	} while (ev.type != MapNotify);
 	xsetenv();
 
-	cresize(w, h);
 	ttyfd = ttynew(opt_line);
+	cresize(w, h);
 	ttyresize(win.tw, win.th);
 
 	clock_gettime(CLOCK_MONOTONIC, &last);
