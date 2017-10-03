@@ -8,6 +8,7 @@
 #define UTF_SIZ       4
 
 /* macros */
+#define DEFAULT(a, b)		(a) = (a) ? (a) : (b)
 #define MIN(a, b)		((a) < (b) ? (a) : (b))
 #define MAX(a, b)		((a) < (b) ? (b) : (a))
 #define LEN(a)			(sizeof(a) / sizeof(a)[0])
@@ -194,7 +195,6 @@ char *xstrdup(char *);
 
 /* Globals */
 extern Term term;
-extern char *opt_title;
 
 /* config.h globals */
 extern char *shell;

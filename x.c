@@ -250,6 +250,7 @@ static char *opt_font  = NULL;
 static char *opt_io    = NULL;
 static char *opt_line  = NULL;
 static char *opt_name  = NULL;
+static char *opt_title = NULL;
 
 static int oldbutton = 3; /* button event on startup: 3 = release */
 
@@ -1726,6 +1727,8 @@ void
 xsettitle(char *p)
 {
 	XTextProperty prop;
+	DEFAULT(p, opt_title);
+	DEFAULT(p, "st");
 
 	Xutf8TextListToTextProperty(xw.dpy, &p, 1, XUTF8StringStyle,
 			&prop);

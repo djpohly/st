@@ -35,7 +35,6 @@
 #define STR_ARG_SIZ   ESC_ARG_SIZ
 
 /* macros */
-#define DEFAULT(a, b)		(a) = (a) ? (a) : (b)
 #define ISCONTROLC0(c)		(BETWEEN(c, 0, 0x1f) || (c) == '\177')
 #define ISCONTROLC1(c)		(BETWEEN(c, 0x80, 0x9f))
 #define ISCONTROL(c)		(ISCONTROLC0(c) || ISCONTROLC1(c))
@@ -151,7 +150,6 @@ static ssize_t xwrite(int, const char *, size_t);
 
 /* Globals */
 Term term;
-char *opt_title = NULL;
 
 static CSIEscape csiescseq;
 static STREscape strescseq;
@@ -2250,7 +2248,7 @@ tresize(int col, int row)
 void
 resettitle(void)
 {
-	xsettitle(opt_title ? opt_title : "st");
+	xsettitle(NULL);
 }
 
 void
