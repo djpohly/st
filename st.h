@@ -167,7 +167,7 @@ void redraw(void);
 
 int tattrset(int);
 void tnew(int, int, unsigned int);
-void tputc(Rune);
+void tputc(Rune, int);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);

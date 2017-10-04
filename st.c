@@ -707,14 +707,14 @@ ttyread(void)
 			charsize = utf8decode(ptr, &unicodep, buflen);
 			if (charsize == 0)
 				break;
-			tputc(unicodep);
+			tputc(unicodep, 0);
 			ptr += charsize;
 			buflen -= charsize;
 
 		} else {
 			if (buflen <= 0)
 				break;
-			tputc(*ptr++ & 0xFF);
+			tputc(*ptr++ & 0xFF, 0);
 			buflen--;
 		}
 	}
@@ -2161,7 +2161,7 @@ eschandle(uchar ascii)
 }
 
 void
-tputc(Rune u)
+tputc(Rune u, int show_ctrl)
 {
 	char c[UTF_SIZ];
 	int control;
