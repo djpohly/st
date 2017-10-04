@@ -173,6 +173,7 @@ static char *kmap(KeySym, uint);
 static int x2col(int);
 static int y2row(int);
 static void cresize(int, int);
+static void ttysend(char *s, size_t n);
 static void getbuttoninfo(XEvent *);
 static void mousereport(XEvent *);
 static void usage(void);
@@ -278,6 +279,32 @@ cresize(int width, int height)
 
 	tresize(col, row);
 	xresize(col, row);
+}
+
+void
+ttysend(char *s, size_t n)
+{
+	int len;
+	char *t, *lim;
+	Rune u;
+
+	ttywrite(s, n);
+	if (!IS_SET(MODE_ECHO))
+		return;
+
+	lim = &s[n];
+	for (t = s; t < lim; t += len) {
+		if (IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
+			len = utf8decode(t, &u, n);
+		} else {
+			u = *t & 0xFF;
+			len = 1;
+		}
+		if (len <= 0)
+			break;
+		techo(u);
+		n -= len;
+	}
 }
 
 void

@@ -786,32 +786,6 @@ write_error:
 }
 
 void
-ttysend(char *s, size_t n)
-{
-	int len;
-	char *t, *lim;
-	Rune u;
-
-	ttywrite(s, n);
-	if (!IS_SET(MODE_ECHO))
-		return;
-
-	lim = &s[n];
-	for (t = s; t < lim; t += len) {
-		if (IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
-			len = utf8decode(t, &u, n);
-		} else {
-			u = *t & 0xFF;
-			len = 1;
-		}
-		if (len <= 0)
-			break;
-		techo(u);
-		n -= len;
-	}
-}
-
-void
 ttyresize(int tw, int th)
 {
 	struct winsize w;

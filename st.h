@@ -171,7 +171,6 @@ void tsetdirtattr(int);
 int ttynew(int, int, char *);
 size_t ttyread(void);
 void ttyresize(int, int);
-void ttysend(char *, size_t);
 void ttywrite(const char *, size_t);
 
 void resettitle(void);
