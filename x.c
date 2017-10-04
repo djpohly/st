@@ -1783,8 +1783,7 @@ cmessage(XEvent *e)
 			win.state &= ~WIN_FOCUSED;
 		}
 	} else if (e->xclient.data.l[0] == xw.wmdeletewin) {
-		/* Send SIGHUP to shell */
-		kill(pid, SIGHUP);
+		ttyhangup();
 		exit(0);
 	}
 }

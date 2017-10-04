@@ -157,7 +157,6 @@ static ssize_t xwrite(int, const char *, size_t);
 /* Globals */
 Term term;
 Selection sel;
-pid_t pid;
 char **opt_cmd  = NULL;
 char *opt_io    = NULL;
 char *opt_title = NULL;
@@ -166,6 +165,7 @@ static CSIEscape csiescseq;
 static STREscape strescseq;
 static int iofd = 1;
 static int cmdfd;
+static pid_t pid;
 
 static uchar utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
 static uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
@@ -778,6 +778,13 @@ ttyresize(int tw, int th)
 	w.ws_ypixel = th;
 	if (ioctl(cmdfd, TIOCSWINSZ, &w) < 0)
 		fprintf(stderr, "Couldn't set window size: %s\n", strerror(errno));
+}
+
+void
+ttyhangup()
+{
+	/* Send SIGHUP to shell */
+	kill(pid, SIGHUP);
 }
 
 int
