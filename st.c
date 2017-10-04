@@ -94,8 +94,8 @@ typedef struct {
 	int narg;              /* nb of args */
 } STREscape;
 
-static void execsh(void);
-static void stty(void);
+static void execsh(char **);
+static void stty(char **);
 static void sigchld(int);
 
 static void csidump(void);
@@ -151,8 +151,6 @@ static ssize_t xwrite(int, const char *, size_t);
 
 /* Globals */
 Term term;
-char **opt_cmd  = NULL;
-char *opt_io    = NULL;
 char *opt_title = NULL;
 
 static CSIEscape csiescseq;
@@ -428,7 +426,7 @@ die(const char *errstr, ...)
 }
 
 void
-execsh(void)
+execsh(char **cmd)
 {
 	char **args, *sh, *prog;
 	const struct passwd *pw;
@@ -444,13 +442,13 @@ execsh(void)
 	if ((sh = getenv("SHELL")) == NULL)
 		sh = (pw->pw_shell[0]) ? pw->pw_shell : shell;
 
-	if (opt_cmd)
-		prog = opt_cmd[0];
+	if (cmd)
+		prog = cmd[0];
 	else if (utmp)
 		prog = utmp;
 	else
 		prog = sh;
-	args = (opt_cmd) ? opt_cmd : (char *[]) {prog, NULL};
+	args = (cmd) ? cmd : (char *[]) {prog, NULL};
 
 	unsetenv("COLUMNS");
 	unsetenv("LINES");
@@ -491,7 +489,7 @@ sigchld(int a)
 
 
 void
-stty(void)
+stty(char **args)
 {
 	char cmd[_POSIX_ARG_MAX], **p, *q, *s;
 	size_t n, siz;
@@ -501,7 +499,7 @@ stty(void)
 	memcpy(cmd, stty_args, n);
 	q = cmd + n;
 	siz = sizeof(cmd) - n;
-	for (p = opt_cmd; p && (s = *p); ++p) {
+	for (p = args; p && (s = *p); ++p) {
 		if ((n = strlen(s)) > siz-1)
 			die("stty parameter length too long\n");
 		*q++ = ' ';
@@ -515,7 +513,7 @@ stty(void)
 }
 
 int
-ttynew(char *line)
+ttynew(char *line, char **args)
 {
 	int m, s;
 
@@ -523,7 +521,7 @@ ttynew(char *line)
 		if ((cmdfd = open(line, O_RDWR)) < 0)
 			die("open line failed: %s\n", strerror(errno));
 		dup2(cmdfd, 0);
-		stty();
+		stty(args);
 		return cmdfd;
 	}
 
@@ -544,7 +542,7 @@ ttynew(char *line)
 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
 		close(s);
 		close(m);
-		execsh();
+		execsh(args);
 		break;
 	default:
 		close(s);
@@ -745,20 +743,20 @@ treset(void)
 }
 
 void
-tnew(int col, int row, unsigned int cursor)
+tnew(int col, int row, unsigned int cursor, char *output)
 {
 	term = (Term){ .c = { .attr = { .fg = defaultfg, .bg = defaultbg } },
 		.cursor = cursor };
 	tresize(col, row);
 	treset();
 
-	if (opt_io) {
+	if (output) {
 		term.mode |= MODE_PRINT;
-		iofd = (!strcmp(opt_io, "-")) ? 1 :
-			open(opt_io, O_WRONLY | O_CREAT, 0666);
+		iofd = (!strcmp(output, "-")) ? 1 :
+			open(output, O_WRONLY | O_CREAT, 0666);
 		if (iofd < 0) {
 			fprintf(stderr, "Error opening %s:%s\n",
-				opt_io, strerror(errno));
+				output, strerror(errno));
 		}
 		fcntl(iofd, F_SETFL, fcntl(iofd, F_GETFL) | FD_CLOEXEC);
 	}
@@ -1667,8 +1665,8 @@ void
 tprinter(char *s, size_t len)
 {
 	if (iofd != -1 && xwrite(iofd, s, len) < 0) {
-		fprintf(stderr, "Error writing in %s:%s\n",
-			opt_io, strerror(errno));
+		fprintf(stderr, "Error writing to output file:%s\n",
+			strerror(errno));
 		close(iofd);
 		iofd = -1;
 	}

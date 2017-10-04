@@ -162,12 +162,12 @@ void redraw(void);
 
 int tattrset(int);
 int tlinelen(int);
-void tnew(int, int, unsigned int);
+void tnew(int, int, unsigned int, char *);
 int twrite(char *, int, int);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
-int ttynew(char *);
+int ttynew(char *, char **);
 size_t ttyread(void);
 void ttyresize(int, int);
 void ttywrite(const char *, size_t);
@@ -194,8 +194,6 @@ char *xstrdup(char *);
 
 /* Globals */
 extern Term term;
-extern char **opt_cmd;
-extern char *opt_io;
 extern char *opt_title;
 
 /* config.h globals */
