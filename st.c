@@ -700,7 +700,7 @@ ttyread(void)
 		die("Couldn't read from shell: %s\n", strerror(errno));
 
 	buflen += ret;
-	written = twrite(buf, buflen);
+	written = twrite(buf, buflen, 0);
 	buflen -= written;
 	/* keep any uncomplete utf8 char for the next call */
 	if (buflen > 0)
@@ -2303,7 +2303,7 @@ check_control_code:
 }
 
 int
-twrite(char *buf, int buflen)
+twrite(char *buf, int buflen, int show_ctrl)
 {
 	char *ptr = buf;
 	int charsize;
@@ -2316,7 +2316,7 @@ twrite(char *buf, int buflen)
 			charsize = utf8decode(ptr, &unicodep, buflen);
 			if (charsize == 0)
 				break;
-			tputc(unicodep, 0);
+			tputc(unicodep, show_ctrl);
 			ret += charsize;
 			ptr += charsize;
 			buflen -= charsize;
@@ -2324,7 +2324,7 @@ twrite(char *buf, int buflen)
 		} else {
 			if (buflen <= 0)
 				break;
-			tputc(*ptr++ & 0xFF, 0);
+			tputc(*ptr++ & 0xFF, show_ctrl);
 			ret++;
 			buflen--;
 		}
