@@ -692,9 +692,7 @@ ttyread(void)
 {
 	static char buf[BUFSIZ];
 	static int buflen = 0;
-	char *ptr;
-	int charsize; /* size of utf8 char in bytes */
-	Rune unicodep;
+	int written;
 	int ret;
 
 	/* append read bytes to unprocessed bytes */
@@ -702,28 +700,11 @@ ttyread(void)
 		die("Couldn't read from shell: %s\n", strerror(errno));
 
 	buflen += ret;
-	ptr = buf;
-
-	for (;;) {
-		if (IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
-			/* process a complete utf8 char */
-			charsize = utf8decode(ptr, &unicodep, buflen);
-			if (charsize == 0)
-				break;
-			tputc(unicodep, 0);
-			ptr += charsize;
-			buflen -= charsize;
-
-		} else {
-			if (buflen <= 0)
-				break;
-			tputc(*ptr++ & 0xFF, 0);
-			buflen--;
-		}
-	}
+	written = twrite(buf, buflen);
+	buflen -= written;
 	/* keep any uncomplete utf8 char for the next call */
 	if (buflen > 0)
-		memmove(buf, ptr, buflen);
+		memmove(buf, buf + written, buflen);
 
 	return ret;
 }
@@ -2319,6 +2300,37 @@ check_control_code:
 	} else {
 		term.c.state |= CURSOR_WRAPNEXT;
 	}
+}
+
+int
+twrite(char *buf, int buflen)
+{
+	char *ptr = buf;
+	int charsize;
+	Rune unicodep;
+	int ret = 0;
+
+	for (;;) {
+		if (IS_SET(MODE_UTF8) && !IS_SET(MODE_SIXEL)) {
+			/* process a complete utf8 char */
+			charsize = utf8decode(ptr, &unicodep, buflen);
+			if (charsize == 0)
+				break;
+			tputc(unicodep, 0);
+			ret += charsize;
+			ptr += charsize;
+			buflen -= charsize;
+
+		} else {
+			if (buflen <= 0)
+				break;
+			tputc(*ptr++ & 0xFF, 0);
+			ret++;
+			buflen--;
+		}
+	}
+
+	return ret;
 }
 
 void
