@@ -2039,7 +2039,7 @@ run(void)
 	xsetenv();
 
 	cresize(w, h);
-	ttyfd = ttynew(term.col, term.row, opt_line);
+	ttyfd = ttynew(opt_line);
 	ttyresize(win.tw, win.th);
 
 	clock_gettime(CLOCK_MONOTONIC, &last);

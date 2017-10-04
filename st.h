@@ -167,7 +167,7 @@ int twrite(char *, int, int);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
-int ttynew(int, int, char *);
+int ttynew(char *);
 size_t ttyread(void);
 void ttyresize(int, int);
 void ttywrite(const char *, size_t);

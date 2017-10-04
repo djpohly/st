@@ -515,10 +515,9 @@ stty(void)
 }
 
 int
-ttynew(int cols, int rows, char *line)
+ttynew(char *line)
 {
 	int m, s;
-	struct winsize w = {rows, cols, 0, 0};
 
 	if (line) {
 		if ((cmdfd = open(line, O_RDWR)) < 0)
@@ -529,7 +528,7 @@ ttynew(int cols, int rows, char *line)
 	}
 
 	/* seems to work fine on linux, openbsd and freebsd */
-	if (openpty(&m, &s, NULL, NULL, &w) < 0)
+	if (openpty(&m, &s, NULL, NULL, NULL) < 0)
 		die("openpty failed: %s\n", strerror(errno));
 
 	switch (pid = fork()) {
