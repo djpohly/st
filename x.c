@@ -284,15 +284,9 @@ cresize(int width, int height)
 void
 ttysend(char *s, size_t n)
 {
-	int len;
-	char *t, *lim;
-	Rune u;
-
 	ttywrite(s, n);
-	if (!IS_SET(MODE_ECHO))
-		return;
-
-	twrite(s, n, 1);
+	if (IS_SET(MODE_ECHO))
+		twrite(s, n, 1);
 }
 
 void

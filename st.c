@@ -699,8 +699,8 @@ ttyread(void)
 	/* append read bytes to unprocessed bytes */
 	if ((ret = read(cmdfd, buf+buflen, LEN(buf)-buflen)) < 0)
 		die("Couldn't read from shell: %s\n", strerror(errno));
-
 	buflen += ret;
+
 	written = twrite(buf, buflen, 0);
 	buflen -= written;
 	/* keep any uncomplete utf8 char for the next call */
