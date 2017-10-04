@@ -2042,7 +2042,7 @@ run(void)
 	} while (ev.type != MapNotify);
 	xsetenv();
 
-	ttyfd = ttynew(opt_line, opt_cmd);
+	ttyfd = ttynew(opt_line, shell, opt_cmd);
 	cresize(w, h);
 
 	clock_gettime(CLOCK_MONOTONIC, &last);

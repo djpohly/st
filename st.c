@@ -93,7 +93,7 @@ typedef struct {
 	int narg;              /* nb of args */
 } STREscape;
 
-static void execsh(char **);
+static void execsh(char *, char **);
 static void stty(char **);
 static void sigchld(int);
 
@@ -424,7 +424,7 @@ die(const char *errstr, ...)
 }
 
 void
-execsh(char **cmd)
+execsh(char *shell, char **cmd)
 {
 	char **args, *sh, *prog;
 	const struct passwd *pw;
@@ -511,7 +511,7 @@ stty(char **args)
 }
 
 int
-ttynew(char *line, char **args)
+ttynew(char *line, char *shell, char **args)
 {
 	int m, s;
 
@@ -540,7 +540,7 @@ ttynew(char *line, char **args)
 			die("ioctl TIOCSCTTY failed: %s\n", strerror(errno));
 		close(s);
 		close(m);
-		execsh(args);
+		execsh(shell, args);
 		break;
 	default:
 		close(s);

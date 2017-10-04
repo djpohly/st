@@ -168,7 +168,7 @@ int twrite(char *, int, int);
 void tresize(int, int);
 void tsetdirt(int, int);
 void tsetdirtattr(int);
-int ttynew(char *, char **);
+int ttynew(char *, char *, char **);
 size_t ttyread(void);
 void ttyresize(int, int);
 void ttywrite(const char *, size_t);
@@ -196,7 +196,6 @@ char *xstrdup(char *);
 extern Term term;
 
 /* config.h globals */
-extern char *shell;
 extern char *utmp;
 extern char *stty_args;
 extern char *vtiden;
