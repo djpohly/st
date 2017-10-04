@@ -7,7 +7,6 @@ void xbell(void);
 void xclipcopy(void);
 void xloadcols(void);
 int xsetcolorname(int, const char *);
-void xsetenv(void);
 void xsettitle(char *);
 void xsetpointermotion(int);
 void xsetsel(char *);

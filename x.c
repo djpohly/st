@@ -138,6 +138,7 @@ static void xdrawglyphfontspecs(const XftGlyphFontSpec *, Glyph, int, int, int);
 static void xdrawglyph(Glyph, int, int);
 static void xclear(int, int, int, int);
 static void xdrawcursor(void);
+static void xsetenv(void);
 static void drawregion(int, int, int, int);
 static int xgeommasktogravity(int);
 static int xloadfont(Font *, FcPattern *);
@@ -1861,6 +1862,7 @@ run(void)
 			h = ev.xconfigure.height;
 		}
 	} while (ev.type != MapNotify);
+	xsetenv();
 
 	cresize(w, h);
 	ttyfd = ttynew(term.col, term.row, opt_line);
