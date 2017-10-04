@@ -3,8 +3,9 @@
 /* Functions from x.c used by st.c */
 void draw(void);
 
+void selclear(void);
 void selscroll(int, int);
-int selected(int x, int y);
+int selected(int, int);
 void xbell(void);
 void xclipcopy(void);
 void xloadcols(void);

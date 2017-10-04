@@ -170,6 +170,7 @@ static void selclear_(XEvent *);
 static void selrequest(XEvent *);
 static void selinit(void);
 static void selsnap(int *, int *, int);
+static void selnormalize(void);
 static void setsel(char *, Time);
 static int match(uint, uint);
 static char *kmap(KeySym, uint);

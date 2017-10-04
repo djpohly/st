@@ -179,10 +179,6 @@ void printscreen(const Arg *);
 void toggleprinter(const Arg *);
 void sendbreak(const Arg *);
 
-void selclear(void);
-
-void selnormalize(void);
-int selected(int, int);
 char *getsel(void);
 
 size_t utf8encode(Rune, char *);
