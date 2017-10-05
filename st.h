@@ -87,6 +87,7 @@ void sendbreak(const Arg *);
 void toggleprinter(const Arg *);
 
 int tattrset(int);
+size_t tmetafy(char *);
 void tnew(int, int);
 void tresize(int, int);
 void tsetdirtattr(int);
@@ -104,8 +105,6 @@ void selstart(int, int, int);
 void selextend(int, int, int, int);
 int selected(int, int);
 char *getsel(void);
-
-size_t utf8encode(Rune, char *);
 
 void *xmalloc(size_t);
 void *xrealloc(void *, size_t);

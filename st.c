@@ -213,6 +213,7 @@ static void selsnap(int *, int *, int);
 
 static size_t utf8decode(const char *, Rune *, size_t);
 static Rune utf8decodebyte(char, size_t *);
+static size_t utf8encode(Rune, char *);
 static char utf8encodebyte(Rune, size_t);
 static char *utf8strchr(char *, Rune);
 static size_t utf8validate(Rune *, size_t);
@@ -2306,6 +2307,17 @@ eschandle(uchar ascii)
 		break;
 	}
 	return 1;
+}
+
+size_t
+tmetafy(char *buf)
+{
+	if (!IS_SET(MODE_8BIT)) {
+		buf[1] = buf[0];
+		buf[0] = '\033';
+		return 2;
+	}
+	return (*buf < 0177) ? utf8encode(*buf | 0x80, buf) : 1;
 }
 
 void
