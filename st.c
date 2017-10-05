@@ -2317,7 +2317,10 @@ tmetafy(char *buf)
 		buf[0] = '\033';
 		return 2;
 	}
-	return (*buf < 0177) ? utf8encode(*buf | 0x80, buf) : 1;
+	if (*buf < 0177 && IS_SET(MODE_UTF8))
+		return utf8encode(*buf | 0x80, buf);
+	*buf |= 0x80;
+	return 1;
 }
 
 void
