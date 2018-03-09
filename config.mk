@@ -11,12 +11,11 @@ X11INC = /usr/X11R6/include
 X11LIB = /usr/X11R6/lib
 
 # includes and libs
+PKGS = fontconfig freetype2 wayland-client wayland-cursor xkbcommon pixman-1 libdrm wld
 INCS = -I$(X11INC) \
-       `pkg-config --cflags fontconfig` \
-       `pkg-config --cflags freetype2`
+       $(shell pkg-config --cflags $(PKGS))
 LIBS = -L$(X11LIB) -lm -lrt -lX11 -lutil -lXft \
-       `pkg-config --libs fontconfig` \
-       `pkg-config --libs freetype2`
+       $(shell pkg-config --libs $(PKGS))
 
 # flags
 CPPFLAGS = -DVERSION=\"$(VERSION)\" -D_XOPEN_SOURCE=600

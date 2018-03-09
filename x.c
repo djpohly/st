@@ -59,6 +59,7 @@ static void zoomreset(const Arg *);
 
 /* config.h for applying patches and the configuration. */
 #include "config.h"
+#include "xconfig.h"
 
 /* XEMBED messages */
 #define XEMBED_FOCUS_IN  4
@@ -75,15 +76,6 @@ typedef XftColor Color;
 typedef XftGlyphFontSpec GlyphFontSpec;
 
 /* Purely graphic info */
-typedef struct {
-	int tw, th; /* tty width and height */
-	int w, h; /* window width and height */
-	int ch; /* char height */
-	int cw; /* char width  */
-	int mode; /* window state/mode flags */
-	int cursor; /* cursor style */
-} TermWindow;
-
 typedef struct {
 	Display *dpy;
 	Colormap cmap;
