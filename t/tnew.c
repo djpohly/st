@@ -1,17 +1,18 @@
+MOCK(0, int, 1, xstartdraw)
+MOCK(0, void,, xfinishdraw)
+MOCK(4, void,, xdrawline, Line, l, int, x1, int, y1, int, x2)
+MOCK(6, void,, xdrawcursor, int, cx, int, cy, Glyph, g, int, ox, int, oy, Glyph, og)
+
 TEST(t_dims,
 	tnew(80, 24);
-	/*ck_assert_int_eq(term.col, 80);*/
-	/*ck_assert_int_eq(term.row, 24);*/
-)
-
-TEST(t_dims_2,
-	tnew(120, 12);
-	/*ck_assert_int_eq(term.col, 120);*/
-	/*ck_assert_int_eq(term.row, 12);*/
-)
-
-TEST(t_dims_3,
-	tnew(12, 120);
-	/*ck_assert_int_eq(term.col, 12);*/
-	/*ck_assert_int_eq(term.row, 120);*/
+	draw();
+	fprintf(stderr, "xstartdraw: %d\n", num_calls(xstartdraw));
+	fprintf(stderr, "xdrawline: %d\n", num_calls(xdrawline));
+	fprintf(stderr, "xdrawcursor: %d\n", num_calls(xdrawcursor));
+	fprintf(stderr, "xfinishdraw: %d\n", num_calls(xfinishdraw));
+	struct __args_xdrawcursor *p = pop_call(xdrawcursor);
+	fprintf(stderr, "U+%04x(%d/%d)\n", VAL_Glyph_(p->g));
+	fprintf(stderr, "U+%04x(%d/%d)\n", VAL_Glyph_(p->og));
+	p = pop_call(xdrawcursor);
+	fprintf(stderr, "%p\n", p);
 )
