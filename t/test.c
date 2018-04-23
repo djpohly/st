@@ -5,6 +5,7 @@
 #include "../st.h"
 
 #define num_calls(fn) ({ struct __args_##fn *p; int i = 0; for (p = __head_##fn; p; p = p->__next) i++; i; })
+/* Returns a pointer that should be freed by the user */
 #define pop_call(fn) ({ struct __args_##fn *p = __head_##fn; if (p) __head_##fn = p->__next; p; })
 #define clear_calls(fn) do { \
 		while (__head_##fn) { \
@@ -38,7 +39,7 @@
 
 #define MOCK(n, rt, rv, name, ...) \
 	struct __args_##name { struct __args_##name *__next; STR##n(__VA_ARGS__); }; \
-	/* XXX FREEME! */ static struct __args_##name *__head_##name; \
+	static struct __args_##name *__head_##name; \
 	rt name(ARGS##n(__VA_ARGS__)) { \
 		struct __args_##name *__p = malloc(sizeof(*__p)); \
 		ck_assert_ptr_nonnull(__p); \
@@ -50,7 +51,6 @@
 #include SUITE
 #undef TEST
 #undef MOCK
-#define MOCK(...)
 
 int
 main(void)
@@ -59,9 +59,11 @@ main(void)
 	TCase *tc = tcase_create("default");
 	SRunner *r = srunner_create(NULL);
 
+#define MOCK(...)
 #define TEST(name, ...) tcase_add_test(tc, name);
 #include SUITE
 #undef TEST
+#undef MOCK
 	suite_add_tcase(s, tc);
 	srunner_add_suite(r, s);
 

@@ -17,8 +17,4 @@ TEST(t_dims,
 	p = pop_call(xdrawcursor);
 	fprintf(stderr, "%p\n", p);
 	free(p);
-	clear_calls(xdrawcursor);
-	clear_calls(xstartdraw);
-	clear_calls(xfinishdraw);
-	clear_calls(xdrawline);
 )
