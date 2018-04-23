@@ -11,8 +11,8 @@ TEST(t_dims,
 	fprintf(stderr, "xdrawcursor: %d\n", num_calls(xdrawcursor));
 	fprintf(stderr, "xfinishdraw: %d\n", num_calls(xfinishdraw));
 	struct __args_xdrawcursor *p = pop_call(xdrawcursor);
-	fprintf(stderr, "U+%04x(%d/%d)\n", VAL_Glyph_(p->g));
-	fprintf(stderr, "U+%04x(%d/%d)\n", VAL_Glyph_(p->og));
+	fprintf(stderr, "U+%04x(%d/%d)\n", p->g.u, p->g.fg, p->g.bg);
+	fprintf(stderr, "U+%04x(%d/%d)\n", p->og.u, p->og.fg, p->og.bg);
 	p = pop_call(xdrawcursor);
 	fprintf(stderr, "%p\n", p);
 )
