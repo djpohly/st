@@ -2,6 +2,7 @@ include ../config.mk
 
 TESTS = tnew
 OBJS = x.o st.o
+TESTOBJS = $(addsuffix .o,$(TESTS))
 
 LDLIBS += -lcheck
 
@@ -10,7 +11,7 @@ LDLIBS += -lcheck
 all: $(TESTS)
 
 clean:
-	$(RM) $(TESTS) test.o $(OBJS)
+	$(RM) $(TESTS) $(TESTOBJS) $(OBJS)
 
 check:
 	prove $(addprefix ./,$(TESTS))
@@ -19,7 +20,10 @@ $(OBJS): %.o: ../%.c
 	$(CC) $(STCFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
 	objcopy --weaken $@
 
-$(TESTS): %: %.c $(OBJS) test.o test.h
+$(TESTOBJS): %.o: test.c %.c
+	$(CC) -c -o $@ -DSUITE=\"$*.c\" $<
+
+$(TESTS): %: %.o $(OBJS)
 	$(CC) -o $@ $^ $(STLDFLAGS) -lcheck
 
 $(OBJS): CPPFLAGS+=-Dstatic=

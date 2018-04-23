@@ -1,27 +1,17 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <check.h>
+TEST(t_dims,
+	tnew(80, 24);
+	/*ck_assert_int_eq(term.col, 80);*/
+	/*ck_assert_int_eq(term.row, 24);*/
+)
 
-#include "test.h"
-#include "../st.h"
+TEST(t_dims_2,
+	tnew(120, 12);
+	/*ck_assert_int_eq(term.col, 120);*/
+	/*ck_assert_int_eq(term.row, 12);*/
+)
 
-START_TEST(t_cursor_1)
-{
-	tnew(80, 24, 1, NULL);
-	ck_assert_int_eq(term.cursor, 1);
-}
-END_TEST
-
-START_TEST(t_cursor_3)
-{
-	tnew(80, 24, 3, NULL);
-	ck_assert_int_eq(term.cursor, 3);
-}
-END_TEST
-
-const TFun TESTS[] = {
-	t_cursor_1,
-	t_cursor_3,
-};
-const int NTESTS = sizeof(TESTS)/sizeof(*TESTS);
-const char *const TESTSUITE = "tnew";
+TEST(t_dims_3,
+	tnew(12, 120);
+	/*ck_assert_int_eq(term.col, 12);*/
+	/*ck_assert_int_eq(term.row, 120);*/
+)
