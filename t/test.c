@@ -4,9 +4,18 @@
 
 #include "../st.h"
 
-#define num_calls(fn) ({ struct __args_##fn *p; int i = 0; for (p = __head_##fn; p; p = p->__next) i++; i; })
+#define num_calls(fn) ({ \
+	struct __args_##fn *p; \
+	int i = 0; \
+	for (p = __head_##fn; p; p = p->__next) \
+		i++; \
+	i; })
 /* Returns a pointer that should be freed by the user */
-#define pop_call(fn) ({ struct __args_##fn *p = __head_##fn; if (p) __head_##fn = p->__next; p; })
+#define pop_call(fn) ({ \
+	struct __args_##fn *p = __head_##fn; \
+	if (p) \
+		__head_##fn = p->__next; \
+	p; })
 #define clear_calls(fn) do { \
 		while (__head_##fn) { \
 			struct __args_##fn *p = __head_##fn; \
