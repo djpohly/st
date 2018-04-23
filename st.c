@@ -1193,7 +1193,7 @@ tmoveto(int x, int y)
 void
 tsetchar(Rune u, Glyph *attr, int x, int y)
 {
-	static char *vt100_0[62] = { /* 0x41 - 0x7e */
+	static const char *vt100_0[62] = { /* 0x41 - 0x7e */
 		"↑", "↓", "→", "←", "█", "▚", "☃", /* A - G */
 		0, 0, 0, 0, 0, 0, 0, 0, /* H - O */
 		0, 0, 0, 0, 0, 0, 0, 0, /* P - W */
@@ -2077,8 +2077,8 @@ tdefutf8(char ascii)
 void
 tdeftran(char ascii)
 {
-	static char cs[] = "0B";
-	static int vcs[] = {CS_GRAPHIC0, CS_USA};
+	static const char cs[] = "0B";
+	static const int vcs[] = {CS_GRAPHIC0, CS_USA};
 	char *p;
 
 	if ((p = strchr(cs, ascii)) == NULL) {
