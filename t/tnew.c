@@ -13,6 +13,12 @@ TEST(t_dims,
 	struct __args_xdrawcursor *p = pop_call(xdrawcursor);
 	fprintf(stderr, "U+%04x(%d/%d)\n", p->g.u, p->g.fg, p->g.bg);
 	fprintf(stderr, "U+%04x(%d/%d)\n", p->og.u, p->og.fg, p->og.bg);
+	free(p);
 	p = pop_call(xdrawcursor);
 	fprintf(stderr, "%p\n", p);
+	free(p);
+	clear_calls(xdrawcursor);
+	clear_calls(xstartdraw);
+	clear_calls(xfinishdraw);
+	clear_calls(xdrawline);
 )

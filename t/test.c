@@ -6,6 +6,13 @@
 
 #define num_calls(fn) ({ struct __args_##fn *p; int i = 0; for (p = __head_##fn; p; p = p->__next) i++; i; })
 #define pop_call(fn) ({ struct __args_##fn *p = __head_##fn; if (p) __head_##fn = p->__next; p; })
+#define clear_calls(fn) do { \
+		while (__head_##fn) { \
+			struct __args_##fn *p = __head_##fn; \
+			__head_##fn = __head_##fn->__next; \
+			free(p); \
+		} \
+	} while (0)
 
 #define ARGS0() void
 #define ARGS1(at, an) at an
