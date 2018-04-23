@@ -13,7 +13,7 @@ all: $(TESTS)
 clean:
 	$(RM) $(TESTS) $(TESTOBJS) $(OBJS)
 
-check:
+check: $(TESTS)
 	prove $(addprefix ./,$(TESTS))
 
 $(OBJS): %.o: ../%.c
