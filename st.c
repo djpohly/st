@@ -136,6 +136,14 @@ typedef struct {
 	int *tabs;
 } Term;
 
+typedef struct {
+	pid_t pid;
+	int cmdfd;
+	int iofd;
+	int buflen;
+	char buf[BUFSIZ];
+} TTY;
+
 /* CSI Escape sequence structs */
 /* ESC '[' [[ [<priv>] <arg> [;]] <mode> [<mode>]] */
 typedef struct {
@@ -228,9 +236,7 @@ static Term term;
 static Selection sel;
 static CSIEscape csiescseq;
 static STREscape strescseq;
-static int iofd = 1;
-static int cmdfd;
-static pid_t pid;
+static TTY tty = { .iofd = 1 };
 
 static uchar utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
 static uchar utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
@@ -730,10 +736,10 @@ sigchld(int a)
 	int stat;
 	pid_t p;
 
-	if ((p = waitpid(pid, &stat, WNOHANG)) < 0)
-		die("waiting for pid %hd failed: %s\n", pid, strerror(errno));
+	if ((p = waitpid(tty.pid, &stat, WNOHANG)) < 0)
+		die("waiting for pid %hd failed: %s\n", tty.pid, strerror(errno));
 
-	if (pid != p)
+	if (tty.pid != p)
 		return;
 
 	if (!WIFEXITED(stat) || WEXITSTATUS(stat))
@@ -772,33 +778,33 @@ ttynew(char *line, char *cmd, char *out, char **args)
 
 	if (out) {
 		term.mode |= MODE_PRINT;
-		iofd = (!strcmp(out, "-")) ?
+		tty.iofd = (!strcmp(out, "-")) ?
 			  1 : open(out, O_WRONLY | O_CREAT, 0666);
-		if (iofd < 0) {
+		if (tty.iofd < 0) {
 			fprintf(stderr, "Error opening %s:%s\n",
 				out, strerror(errno));
 		}
 	}
 
 	if (line) {
-		if ((cmdfd = open(line, O_RDWR)) < 0)
+		if ((tty.cmdfd = open(line, O_RDWR)) < 0)
 			die("open line '%s' failed: %s\n",
 			    line, strerror(errno));
-		dup2(cmdfd, 0);
+		dup2(tty.cmdfd, 0);
 		stty(args);
-		return cmdfd;
+		return tty.cmdfd;
 	}
 
 	/* seems to work fine on linux, openbsd and freebsd */
 	if (openpty(&m, &s, NULL, NULL, NULL) < 0)
 		die("openpty failed: %s\n", strerror(errno));
 
-	switch (pid = fork()) {
+	switch (tty.pid = fork()) {
 	case -1:
 		die("fork failed: %s\n", strerror(errno));
 		break;
 	case 0:
-		close(iofd);
+		close(tty.iofd);
 		setsid(); /* create a new process group */
 		dup2(s, 0);
 		dup2(s, 1);
@@ -811,31 +817,29 @@ ttynew(char *line, char *cmd, char *out, char **args)
 		break;
 	default:
 		close(s);
-		cmdfd = m;
+		tty.cmdfd = m;
 		signal(SIGCHLD, sigchld);
 		break;
 	}
-	return cmdfd;
+	return tty.cmdfd;
 }
 
 size_t
 ttyread(void)
 {
-	static char buf[BUFSIZ];
-	static int buflen = 0;
 	int written;
 	int ret;
 
 	/* append read bytes to unprocessed bytes */
-	if ((ret = read(cmdfd, buf+buflen, LEN(buf)-buflen)) < 0)
+	if ((ret = read(tty.cmdfd, tty.buf+tty.buflen, LEN(tty.buf)-tty.buflen)) < 0)
 		die("couldn't read from shell: %s\n", strerror(errno));
-	buflen += ret;
+	tty.buflen += ret;
 
-	written = twrite(buf, buflen, 0);
-	buflen -= written;
+	written = twrite(tty.buf, tty.buflen, 0);
+	tty.buflen -= written;
 	/* keep any uncomplete utf8 char for the next call */
-	if (buflen > 0)
-		memmove(buf, buf + written, buflen);
+	if (tty.buflen > 0)
+		memmove(tty.buf, tty.buf + written, tty.buflen);
 
 	return ret;
 }
@@ -884,22 +888,22 @@ ttywriteraw(const char *s, size_t n)
 	while (n > 0) {
 		FD_ZERO(&wfd);
 		FD_ZERO(&rfd);
-		FD_SET(cmdfd, &wfd);
-		FD_SET(cmdfd, &rfd);
+		FD_SET(tty.cmdfd, &wfd);
+		FD_SET(tty.cmdfd, &rfd);
 
 		/* Check if we can write. */
-		if (pselect(cmdfd+1, &rfd, &wfd, NULL, NULL, NULL) < 0) {
+		if (pselect(tty.cmdfd+1, &rfd, &wfd, NULL, NULL, NULL) < 0) {
 			if (errno == EINTR)
 				continue;
 			die("select failed: %s\n", strerror(errno));
 		}
-		if (FD_ISSET(cmdfd, &wfd)) {
+		if (FD_ISSET(tty.cmdfd, &wfd)) {
 			/*
 			 * Only write the bytes written by ttywrite() or the
 			 * default of 256. This seems to be a reasonable value
 			 * for a serial line. Bigger values might clog the I/O.
 			 */
-			if ((r = write(cmdfd, s, (n < lim)? n : lim)) < 0)
+			if ((r = write(tty.cmdfd, s, (n < lim)? n : lim)) < 0)
 				goto write_error;
 			if (r < n) {
 				/*
@@ -916,7 +920,7 @@ ttywriteraw(const char *s, size_t n)
 				break;
 			}
 		}
-		if (FD_ISSET(cmdfd, &rfd))
+		if (FD_ISSET(tty.cmdfd, &rfd))
 			lim = ttyread();
 	}
 	return;
@@ -934,7 +938,7 @@ ttyresize(int tw, int th)
 	w.ws_col = term.col;
 	w.ws_xpixel = tw;
 	w.ws_ypixel = th;
-	if (ioctl(cmdfd, TIOCSWINSZ, &w) < 0)
+	if (ioctl(tty.cmdfd, TIOCSWINSZ, &w) < 0)
 		fprintf(stderr, "Couldn't set window size: %s\n", strerror(errno));
 }
 
@@ -942,7 +946,7 @@ void
 ttyhangup()
 {
 	/* Send SIGHUP to shell */
-	kill(pid, SIGHUP);
+	kill(tty.pid, SIGHUP);
 }
 
 int
@@ -1959,17 +1963,17 @@ strreset(void)
 void
 sendbreak(const Arg *arg)
 {
-	if (tcsendbreak(cmdfd, 0))
+	if (tcsendbreak(tty.cmdfd, 0))
 		perror("Error sending break");
 }
 
 void
 tprinter(char *s, size_t len)
 {
-	if (iofd != -1 && xwrite(iofd, s, len) < 0) {
+	if (tty.iofd != -1 && xwrite(tty.iofd, s, len) < 0) {
 		perror("Error writing to output file");
-		close(iofd);
-		iofd = -1;
+		close(tty.iofd);
+		tty.iofd = -1;
 	}
 }
 
