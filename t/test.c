@@ -4,6 +4,41 @@
 
 #include "../st.h"
 
+
+/* Preprocessing for fun and profit (enables recursive macros up to depth 32) */
+/* Adapted from http://jhnet.co.uk/articles/cpp_magic */
+
+/* Manipulating expansion passes */
+#define EMPTY()
+#define DEFER1(m) m EMPTY()
+#define DEFER2(m) m EMPTY EMPTY()()
+#define EVAL1(...) __VA_ARGS__
+#define EVAL2(...) EVAL1(EVAL1(__VA_ARGS__))
+#define EVAL4(...) EVAL2(EVAL2(__VA_ARGS__))
+#define EVAL8(...) EVAL4(EVAL4(__VA_ARGS__))
+#define EVAL16(...) EVAL8(EVAL8(__VA_ARGS__))
+#define EVAL(...) EVAL16(EVAL16(__VA_ARGS__))
+
+/* Helpers */
+#define FIRST(x, ...) x
+#define SECOND(x, y, ...) y
+#define CAT(x, y) x##y
+
+/* Conditionals */
+#define IS_ONEARG(...) SECOND(__VA_ARGS__, 1)
+#define BOOL(x) IS_ONEARG(CAT(_BOOL_, x))
+#define _BOOL_0 0,0
+
+#define _END_ARGS_() 0
+#define HAS_ARGS(...) BOOL(FIRST(_END_ARGS_ __VA_ARGS__)())
+
+#define _IF_0(...)
+#define _IF_1(...) __VA_ARGS__
+#define IF_ARGS(...) EVAL1(DEFER1(CAT)(_IF_, HAS_ARGS(__VA_ARGS__)))
+
+
+/* "Functions" that can be used by tests */
+
 #define num_calls(fn) ({ \
 	struct __args_##fn *p; \
 	int i = 0; \
@@ -24,35 +59,27 @@
 		} \
 	} while (0)
 
-#define ARGS0() void
-#define ARGS1(at, an) at an
-#define ARGS2(at, an, ...) at an, ARGS1(__VA_ARGS__)
-#define ARGS3(at, an, ...) at an, ARGS2(__VA_ARGS__)
-#define ARGS4(at, an, ...) at an, ARGS3(__VA_ARGS__)
-#define ARGS5(at, an, ...) at an, ARGS4(__VA_ARGS__)
-#define ARGS6(at, an, ...) at an, ARGS5(__VA_ARGS__)
-#define STR0()
-#define STR1(at, an) at an
-#define STR2(at, an, ...) at an; STR1(__VA_ARGS__)
-#define STR3(at, an, ...) at an; STR2(__VA_ARGS__)
-#define STR4(at, an, ...) at an; STR3(__VA_ARGS__)
-#define STR5(at, an, ...) at an; STR4(__VA_ARGS__)
-#define STR6(at, an, ...) at an; STR5(__VA_ARGS__)
-#define VAL0()
-#define VAL1(at, an) an
-#define VAL2(at, an, ...) an, VAL1(__VA_ARGS__)
-#define VAL3(at, an, ...) an, VAL2(__VA_ARGS__)
-#define VAL4(at, an, ...) an, VAL3(__VA_ARGS__)
-#define VAL5(at, an, ...) an, VAL4(__VA_ARGS__)
-#define VAL6(at, an, ...) an, VAL5(__VA_ARGS__)
+
+/* Definitions for setting up mock functions */
+
+#define ARGS(...) IF_ARGS(__VA_ARGS__)(EVAL(_ARGS(__VA_ARGS__)))
+#define _ARGS(x, y, ...) x y IF_ARGS(__VA_ARGS__)(, DEFER2(__ARGS)()(__VA_ARGS__))
+#define __ARGS() _ARGS
+
+#define STRUCT(...) IF_ARGS(__VA_ARGS__)(EVAL(_STRUCT(__VA_ARGS__)))
+#define _STRUCT(x, y, ...) x y; IF_ARGS(__VA_ARGS__)(DEFER2(__STRUCT)()(__VA_ARGS__))
+#define __STRUCT() _STRUCT
+
+#define VALS(...) IF_ARGS(__VA_ARGS__)(EVAL(_VALS(__VA_ARGS__)))
+#define _VALS(x, y, ...) y IF_ARGS(__VA_ARGS__)(, DEFER2(__VALS)()(__VA_ARGS__))
+#define __VALS() _VALS
 
 #define MOCK(n, rt, rv, name, ...) \
-	struct __args_##name { struct __args_##name *__next; STR##n(__VA_ARGS__); }; \
+	struct __args_##name { struct __args_##name *__next; STRUCT(__VA_ARGS__) }; \
 	static struct __args_##name *__head_##name; \
-	rt name(ARGS##n(__VA_ARGS__)) { \
+	rt name(ARGS(__VA_ARGS__)) { \
 		struct __args_##name *__p = malloc(sizeof(*__p)); \
-		ck_assert_ptr_nonnull(__p); \
-		*__p = (struct __args_##name) { __head_##name, VAL##n(__VA_ARGS__) }; \
+		*__p = (struct __args_##name) { __head_##name, VALS(__VA_ARGS__) }; \
 		__head_##name = __p; \
 		return rv; \
 	}
@@ -60,6 +87,7 @@
 #include SUITE
 #undef TEST
 #undef MOCK
+
 
 int
 main(void)
